@@ -6,6 +6,7 @@ import { SphereMask } from "@/components/magicui/sphere-mask";
 import AboutSection from "@/components/landing/about-section";
 import MissionSection from "@/components/landing/mission-section";
 import FeatureCardsSection from "@/components/landing/feature-cards-section";
+import PlayersMarqueeSection from "@/components/landing/players-marquee-section";
 
 export default async function Page() {
   return (
@@ -16,6 +17,7 @@ export default async function Page() {
       <AboutSection />
       <MissionSection />
       <FeatureCardsSection />
+      <PlayersMarqueeSection />
       <CallToActionSection />
       <Particles
         className="absolute inset-0 -z-10"

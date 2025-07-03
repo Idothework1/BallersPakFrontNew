@@ -3,11 +3,11 @@ import Link from "next/link";
 
 const footerNavs = [
   {
-    label: "Product",
+    label: "Academy",
     items: [
       {
-        href: "/",
-        name: "Email Collection",
+        href: "/programs",
+        name: "Training Programs",
       },
       {
         href: "/pricing",
@@ -24,15 +24,15 @@ const footerNavs = [
     label: "Community",
     items: [
       {
-        href: "/",
-        name: "Discord",
+        href: "https://www.instagram.com/ballerspak/",
+        name: "Instagram",
       },
       {
-        href: "/",
+        href: "https://twitter.com/ballerspak",
         name: "Twitter",
       },
       {
-        href: "mailto:hello@chatcollect.com",
+        href: "mailto:info@ballerspak.com",
         name: "Email",
       },
     ],
@@ -55,12 +55,12 @@ const footerNavs = [
 
 const footerSocials = [
   {
-    href: "",
-    name: "Discord",
+    href: "https://www.instagram.com/ballerspak/",
+    name: "Instagram",
     icon: <DiscordLogoIcon className="h-4 w-4" />,
   },
   {
-    href: "",
+    href: "https://twitter.com/ballerspak",
     name: "Twitter",
     icon: <TwitterLogoIcon className="h-4 w-4" />,
   },
@@ -78,7 +78,7 @@ export function SiteFooter() {
                 BallersPak
               </span>
             </Link>
-            <p className="max-w-xs">UI Library for Design Engineers</p>
+            <p className="max-w-xs">Pakistan's Leading Football Academy—Now Online</p>
           </div>
           <div className="grid grid-cols-1 gap-8 sm:gap-10 sm:grid-cols-3">
             {footerNavs.map((nav) => (
