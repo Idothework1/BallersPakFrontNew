@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlignJustify, XIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -124,9 +125,11 @@ export function SiteHeader() {
       <header className="fixed left-0 top-0 z-40 w-full translate-y-[-1rem] animate-fade-in border-b opacity-0 backdrop-blur-[12px] [--animation-delay:600ms]">
         <div className="container flex h-[3.5rem] items-center justify-between">
           <Link className="text-md flex items-center" href="/">
-            <img
+            <Image
               src="/Logo.svg"
               alt="BallersPak logo"
+              width={112}
+              height={112}
               className="h-28 w-auto mt-14"
             />
           </Link>
@@ -170,9 +173,11 @@ export function SiteHeader() {
         >
           <div className="container flex h-[3.5rem] items-center justify-between">
             <Link className="text-md flex items-center" href="/">
-              <img
+              <Image
                 src="/Logo.svg"
                 alt="BallersPak logo"
+                width={112}
+                height={112}
                 className="h-28 w-auto mt-14"
               />
             </Link>

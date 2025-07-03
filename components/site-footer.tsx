@@ -1,5 +1,6 @@
 import { DiscordLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import Image from "next/image";
 
 const footerNavs = [
   {
@@ -73,12 +74,12 @@ export function SiteFooter() {
         <div className="md:flex md:justify-between px-8 p-4 py-16 sm:pb-16 gap-4">
           <div className="mb-12 flex-col flex gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/Logo.svg" className="h-10 w-10" />
+              <Image src="/Logo.svg" alt="BallersPak logo" width={40} height={40} className="h-10 w-10" />
               <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                 BallersPak
               </span>
             </Link>
-            <p className="max-w-xs">Pakistan's Leading Football Academy—Now Online</p>
+            <p className="max-w-xs">Pakistan&apos;s Leading Football Academy—Now Online</p>
           </div>
           <div className="grid grid-cols-1 gap-8 sm:gap-10 sm:grid-cols-3">
             {footerNavs.map((nav) => (
