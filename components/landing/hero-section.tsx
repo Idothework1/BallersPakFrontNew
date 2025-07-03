@@ -67,7 +67,7 @@ export default function HeroSection() {
         </h1>
 
         <h2 className="mb-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:300ms] text-balance">
-          Pakistan's Most Popular Academy is{" "}
+          Pakistan&apos;s Most Popular Academy is{" "}
           <PointerHighlight>
             <span>Now Online</span>
           </PointerHighlight>

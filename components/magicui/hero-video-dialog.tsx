@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import { ReactNode, useState } from "react";
+import Image from "next/image";
 
 interface HeroVideoDialogProps {
   className?: string;
@@ -45,10 +46,12 @@ export default function HeroVideoDialog({
   return (
     <>
       {/* Thumbnail */}
-      <img
+      <Image
         src={thumbnailSrc}
-        alt={thumbnailAlt}
-        className={cn("cursor-pointer rounded-[inherit] border object-contain", className)}
+        alt={thumbnailAlt || "thumbnail"}
+        width={400}
+        height={225}
+        className={cn("cursor-pointer rounded-[inherit] border object-contain w-full h-auto", className)}
         onClick={() => setOpen(true)}
       />
 
