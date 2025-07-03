@@ -1,24 +1,23 @@
 "use client";
 
 import Marquee from "@/components/magicui/marquee";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const players = [
-  { name: "Lionel Messi", desc: "Inter Miami CF", img: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Lionel_Messi_20180626.jpg" },
-  { name: "Kylian Mbappé", desc: "Paris Saint-Germain", img: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Kylian_Mbappe_2019.jpg" },
-  { name: "Erling Haaland", desc: "Manchester City", img: "https://upload.wikimedia.org/wikipedia/commons/0/09/Erling_Haaland_2023_%28cropped%29.jpg" },
-  { name: "Kevin De Bruyne", desc: "Manchester City", img: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Kevin_De_Bruyne_201807091.jpg" },
-  { name: "Vinícius Júnior", desc: "Real Madrid", img: "https://upload.wikimedia.org/wikipedia/commons/9/92/Vinicius_Jr_2023.jpg" },
-  { name: "Mohamed Salah", desc: "Liverpool FC", img: "https://upload.wikimedia.org/wikipedia/commons/8/80/Mohamed_Salah_2018.jpg" },
-  { name: "Robert Lewandowski", desc: "FC Barcelona", img: "https://upload.wikimedia.org/wikipedia/commons/9/97/Robert_Lewandowski_2023_%28cropped%29.jpg" },
-  { name: "Jude Bellingham", desc: "Real Madrid", img: "https://upload.wikimedia.org/wikipedia/commons/2/29/Jude_Bellingham_2023.jpg" },
+  { name: "Lionel Messi", desc: "Inter Miami CF", color: "bg-rose-500" },
+  { name: "Kylian Mbappé", desc: "Paris Saint-Germain", color: "bg-fuchsia-500" },
+  { name: "Erling Haaland", desc: "Manchester City", color: "bg-sky-500" },
+  { name: "Kevin De Bruyne", desc: "Manchester City", color: "bg-amber-400" },
+  { name: "Vinícius Júnior", desc: "Real Madrid", color: "bg-green-500" },
+  { name: "Mohamed Salah", desc: "Liverpool FC", color: "bg-red-600" },
+  { name: "Robert Lewandowski", desc: "FC Barcelona", color: "bg-blue-600" },
+  { name: "Jude Bellingham", desc: "Real Madrid", color: "bg-yellow-300" },
 ];
 
 const firstRow = players.slice(0, players.length / 2);
 const secondRow = players.slice(players.length / 2);
 
-function PlayerCard({ img, name, desc }: { img: string; name: string; desc: string }) {
+function PlayerCard({ color, name, desc }: { color: string; name: string; desc: string }) {
   return (
     <figure
       className={cn(
@@ -26,7 +25,7 @@ function PlayerCard({ img, name, desc }: { img: string; name: string; desc: stri
         "border-white/10 bg-white/5 dark:bg-white/10 backdrop-blur-sm"
       )}
     >
-      <Image src={img} alt={name} width={80} height={80} className="h-20 w-20 rounded-lg object-cover flex-shrink-0" />
+      <div className={`h-20 w-20 rounded-full flex-shrink-0 ${color}`} />
       <div className="flex flex-col">
         <figcaption className="text-sm font-semibold text-white">{name}</figcaption>
         <p className="text-xs text-white/70">{desc}</p>
@@ -42,11 +41,13 @@ export default function PlayersMarqueeSection() {
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
         <Marquee className="[--duration:25s]">
           {firstRow.map((p) => (
+            // @ts-ignore
             <PlayerCard key={p.name} {...p} />
           ))}
         </Marquee>
         <Marquee reverse className="[--duration:25s]">
           {secondRow.map((p) => (
+            // @ts-ignore
             <PlayerCard key={p.name} {...p} />
           ))}
         </Marquee>
