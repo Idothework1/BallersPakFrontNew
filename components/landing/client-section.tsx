@@ -1,4 +1,5 @@
 import Marquee from "@/components/magicui/marquee";
+import Image from "next/image";
 
 export default function ClientSection() {
   return (
@@ -51,11 +52,13 @@ export default function ClientSection() {
                   src: "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
                 },
               ].map((club) => (
-                <img
+                <Image
                   key={club.id}
                   src={club.src}
-                  className="h-16 px-6 object-contain grayscale opacity-60 dark:grayscale"
                   alt={`${club.id} logo`}
+                  width={64}
+                  height={64}
+                  className="h-16 w-auto px-6 object-contain grayscale opacity-60 dark:grayscale"
                 />
               ))}
             </Marquee>
