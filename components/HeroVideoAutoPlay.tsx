@@ -9,6 +9,7 @@ export default function HeroVideoAutoPlay() {
 
   return (
     <>
+      {/* Video with loading skeleton */}
       <video
         src="/Video.mp4"
         autoPlay
@@ -16,7 +17,7 @@ export default function HeroVideoAutoPlay() {
         loop
         playsInline
         onClick={() => setOpen(true)}
-        className="relative z-60 w-full h-full cursor-pointer rounded-[inherit] border object-cover"
+        className="w-full h-full cursor-pointer rounded-[inherit] object-cover"
       />
 
       <AnimatePresence>

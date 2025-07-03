@@ -6,7 +6,6 @@ import AboutSection from "@/components/landing/about-section";
 import MissionSection from "@/components/landing/mission-section";
 import FeatureCardsSection from "@/components/landing/feature-cards-section";
 import PlayersMarqueeSection from "@/components/landing/players-marquee-section";
-import { DotPatternDemo } from "@/components/magicui/dot-pattern-demo";
 
 export default async function Page() {
   return (
@@ -19,7 +18,6 @@ export default async function Page() {
       <FeatureCardsSection />
       <PlayersMarqueeSection />
       <CallToActionSection />
-      <DotPatternDemo />
     </>
   );
 }

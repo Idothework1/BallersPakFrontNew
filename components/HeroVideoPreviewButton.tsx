@@ -78,6 +78,7 @@ export default function HeroVideoPreviewButton() {
                 autoPlay
                 className="h-full w-full rounded-lg object-contain"
               />
+
               <button
                 className="absolute -right-3 -top-3 rounded-full bg-white p-1 text-black shadow"
                 onClick={() => setOpen(false)}

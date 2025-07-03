@@ -51,7 +51,7 @@ export default function HeroSection() {
       >
         {/* Dot grid background */}
         <DotPattern
-          className="absolute -z-10 top-[-4rem] left-0 right-0 h-[calc(100%+4rem)] fill-neutral-500/40 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]"
+          className="absolute -z-10 top-[-2rem] left-0 right-0 h-full fill-neutral-500/20 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]"
           width={20}
           height={20}
           cx={1}
