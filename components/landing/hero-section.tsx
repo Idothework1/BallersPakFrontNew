@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
 import { PointerHighlight } from "@/components/ui/pointer-highlight";
 import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
+import { DotPattern } from "@/components/magicui/dot-pattern";
 
 export default function HeroSection() {
   const ref = useRef(null);
@@ -48,6 +49,16 @@ export default function HeroSection() {
         id="hero"
         className="relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8"
       >
+        {/* Dot grid background */}
+        <DotPattern
+          className="absolute -z-10 top-[-4rem] left-0 right-0 h-[calc(100%+4rem)] fill-neutral-500/40 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]"
+          width={20}
+          height={20}
+          cx={1}
+          cy={1}
+          cr={1.2}
+          glow
+        />
         <div className="backdrop-filter-[12px] inline-flex h-7 items-center justify-between rounded-full border border-white/5 bg-white/10 px-3 text-xs text-white dark:text-black transition-all ease-in hover:cursor-pointer hover:bg-white/20 group gap-1 translate-y-[-1rem] animate-fade-in opacity-0">
           <TextShimmer className="inline-flex items-center justify-center">
             <span>✨ Introducing BallersPak Online</span>{" "}
