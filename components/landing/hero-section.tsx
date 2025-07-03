@@ -55,7 +55,15 @@ export default function HeroSection() {
           </TextShimmer>
         </div>
         <h1 className="bg-gradient-to-br dark:from-white from-black from-30% dark:to-white/40 to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent text-balance sm:text-6xl md:text-7xl lg:text-8xl translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-          BallersPak
+          Ballers
+          <AnimatedGradientText
+            speed={2}
+            colorFrom="#4ade80"
+            colorTo="#06b6d4"
+            className="inline-block"
+          >
+            Pak
+          </AnimatedGradientText>
         </h1>
 
         <h2 className="mb-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:300ms] text-balance">
