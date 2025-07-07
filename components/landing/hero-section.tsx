@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
 import { PointerHighlight } from "@/components/ui/pointer-highlight";
 import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
-import { DotPattern } from "@/components/magicui/dot-pattern";
+import UnderlineAnimation from "@/components/magicui/underline-animation";
 
 export default function HeroSection() {
   const ref = useRef(null);
@@ -49,16 +49,6 @@ export default function HeroSection() {
         id="hero"
         className="relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8"
       >
-        {/* Dot grid background */}
-        <DotPattern
-          className="absolute -z-10 top-[-2rem] left-0 right-0 h-full fill-neutral-500/20 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]"
-          width={20}
-          height={20}
-          cx={1}
-          cy={1}
-          cr={1.2}
-          glow
-        />
         <div className="backdrop-filter-[12px] inline-flex h-7 items-center justify-between rounded-full border border-white/5 bg-white/10 px-3 text-xs text-white dark:text-black transition-all ease-in hover:cursor-pointer hover:bg-white/20 group gap-1 translate-y-[-1rem] animate-fade-in opacity-0">
           <TextShimmer className="inline-flex items-center justify-center">
             <span>✨ Introducing BallersPak Online</span>{" "}
@@ -78,10 +68,15 @@ export default function HeroSection() {
         </h1>
 
         <h2 className="mb-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:300ms] text-balance">
-          Pakistan&apos;s Most Popular Academy is{" "}
+          Europa&apos;s {" "}
+          <span className="relative inline-block">
+            Most Popular Academy
+            <UnderlineAnimation />
+          </span>{" "}is{" "}
           <PointerHighlight>
-            <span>Now Online</span>
-          </PointerHighlight>
+            <span>now Online</span>
+          </PointerHighlight>{" "}
+          in <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block">Pakistan</AnimatedGradientText>
         </h2>
         <p className="mb-12 text-lg tracking-tight text-gray-400 md:text-xl text-balance translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
           Unlock your potential and train with the elite. Join the largest, most ambitious football community in
@@ -97,9 +92,9 @@ export default function HeroSection() {
         </p>
         <Button 
           onClick={handleJoinClick}
-          className="translate-y-[-1rem] animate-fade-in gap-1 rounded-lg text-white dark:text-black opacity-0 ease-in-out [--animation-delay:600ms]"
+          className="group translate-y-[-1rem] animate-fade-in gap-1 rounded-lg text-white dark:text-black opacity-0 ease-in-out [--animation-delay:600ms] hover:bg-emerald-500 dark:hover:bg-emerald-600"
         >
-          <span>Join the Club </span>
+          <span className="transition-colors duration-300 group-hover:text-white">Join the Club </span>
           <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
         </Button>
 
@@ -136,6 +131,14 @@ export default function HeroSection() {
             <HeroVideoAutoPlay />
           </div>
         </div>
+
+        {/* Background SVG with white glow */}
+        <img
+          src="/Background.svg"
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 w-[110%] max-w-none opacity-20 -z-10"
+          style={{ filter: 'drop-shadow(0 0 60px rgba(255,255,255,0.4))', maskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)', WebkitMaskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)' }}
+        />
       </section>
       <HeroVideoPreviewButton />
     </>
