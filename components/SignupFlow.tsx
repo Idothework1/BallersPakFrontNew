@@ -39,7 +39,7 @@ export default function SignupFlow() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="rounded-lg bg-background p-8 text-center shadow-lg">
             <h3 className="mb-6 text-lg font-semibold">
-              Are you sure you don't want to join?
+              Are you sure you don&apos;t want to join?
             </h3>
             <div className="flex justify-center gap-4">
               <Button onClick={handleConfirmYes}>Yes</Button>
@@ -208,7 +208,7 @@ export default function SignupFlow() {
         </div>
       ) : step === "contact" ? (
         <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
-          <h2 className="text-xl font-semibold text-center">What's your contact number or email?</h2>
+          <h2 className="text-xl font-semibold text-center">What&apos;s your contact number or email?</h2>
           <input
             type="text"
             placeholder="Phone or Email"
