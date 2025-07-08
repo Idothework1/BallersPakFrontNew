@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "@/components/user-auth-form";
@@ -10,7 +10,18 @@ import { cn } from "@/lib/utils";
 import { TextAnimate } from "@/components/magicui/text-animate";
 
 export default function SignupFlow() {
-  type Step = "intro" | "name" | "played" | "experience" | "location" | "contact" | "signup";
+  type Step =
+    | "intro"
+    | "name"
+    | "played"
+    | "experience"
+    | "gender"
+    | "disability"
+    | "location"
+    | "contact"
+    | "goal"
+    | "more"
+    | "done";
   const [step, setStep] = useState<Step>("intro");
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -21,8 +32,14 @@ export default function SignupFlow() {
   const [experienceLevel, setExperienceLevel] = useState("Beginner");
   const [playedClub, setPlayedClub] = useState<boolean | null>(null);
   const [clubName, setClubName] = useState("");
+  const [gender, setGender] = useState<"Male" | "Female" | "">("");
+  const [hasDisability, setHasDisability] = useState<boolean | null>(null);
   const [location, setLocation] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [position, setPosition] = useState("");
+  const [goal, setGoal] = useState("");
+  const [whyJoin, setWhyJoin] = useState("");
 
   const router = useRouter();
 
@@ -31,6 +48,16 @@ export default function SignupFlow() {
   const handleConfirmNo = () => router.push("/");
 
   const handleConfirmYes = () => setShowConfirm(false);
+
+  // Redirect after completion
+  useEffect(() => {
+    if (step === "done") {
+      const timer = setTimeout(() => {
+        router.push("/");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [step, router]);
 
   return (
     <>
@@ -62,7 +89,7 @@ export default function SignupFlow() {
             Pakistan?
           </TextAnimate>
           <div className="flex gap-4 justify-center">
-            <Button onClick={() => setStep("name")}>Yes</Button>
+            <Button onClick={() => setStep("goal")}>Yes</Button>
             <Button variant="secondary" onClick={handleNoFirst}>
               No
             </Button>
@@ -124,7 +151,7 @@ export default function SignupFlow() {
               variant="secondary"
               onClick={() => {
                 setPlayedBefore(false);
-                setStep("location");
+                setStep("gender");
               }}
             >
               No
@@ -141,7 +168,7 @@ export default function SignupFlow() {
               </label>
               <select
                 id="experience"
-                className="border bg-transparent px-3 py-2 rounded-md w-full"
+                className="border bg-white text-black dark:text-black px-3 py-2 rounded-md w-full"
                 value={experienceLevel}
                 onChange={(e) => setExperienceLevel(e.target.value)}
               >
@@ -185,9 +212,55 @@ export default function SignupFlow() {
           </div>
           <div className="flex justify-end gap-4">
             <Button
-              onClick={() => setStep("location")}
+              onClick={() => setStep("gender")}
               disabled={playedClub === null || (playedClub && !clubName)}
             >
+              Continue
+            </Button>
+          </div>
+        </div>
+      ) : step === "gender" ? (
+        <div className="mx-auto flex w-full flex-col items-center gap-6 sm:w-[400px] text-center">
+          <h2 className="text-xl font-semibold">Select your gender</h2>
+          <div className="flex gap-4 justify-center">
+            <Button
+              variant={gender === "Male" ? undefined : "secondary"}
+              onClick={() => setGender("Male")}
+            >
+              Male
+            </Button>
+            <Button
+              variant={gender === "Female" ? undefined : "secondary"}
+              onClick={() => setGender("Female")}
+            >
+              Female
+            </Button>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setStep("disability")} disabled={!gender}>
+              Continue
+            </Button>
+          </div>
+        </div>
+      ) : step === "disability" ? (
+        <div className="mx-auto flex w-full flex-col items-center gap-6 sm:w-[400px] text-center">
+          <h2 className="text-xl font-semibold">Do you have any disability?</h2>
+          <div className="flex gap-4 justify-center">
+            <Button
+              variant={hasDisability === false ? undefined : "secondary"}
+              onClick={() => setHasDisability(false)}
+            >
+              No
+            </Button>
+            <Button
+              variant={hasDisability === true ? undefined : "secondary"}
+              onClick={() => setHasDisability(true)}
+            >
+              Yes
+            </Button>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setStep("location")} disabled={hasDisability === null}>
               Continue
             </Button>
           </div>
@@ -208,45 +281,91 @@ export default function SignupFlow() {
         </div>
       ) : step === "contact" ? (
         <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
-          <h2 className="text-xl font-semibold text-center">What&apos;s your contact number or email?</h2>
+          <h2 className="text-xl font-semibold text-center">Your Contact Details</h2>
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border bg-transparent px-3 py-2 rounded-md w-full"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="phone">Phone Number</label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="03XX-XXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="border bg-transparent px-3 py-2 rounded-md w-full"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setStep("more")} disabled={!email || !phone}>Continue</Button>
+          </div>
+        </div>
+      ) : step === "goal" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">What’s your biggest goal in football?</h2>
           <input
             type="text"
-            placeholder="Phone or Email"
-            value={contact}
-            onChange={(e) => setContact(e.target.value)}
+            placeholder="Your goal"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
             className="border bg-transparent px-3 py-2 rounded-md w-full"
           />
           <div className="flex justify-end">
-            <Button onClick={() => setStep("signup")} disabled={!contact}>Continue</Button>
+            <Button onClick={() => setStep("name")}>Continue</Button>
+          </div>
+        </div>
+      ) : step === "more" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">Tell us a bit more (optional)</h2>
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="position">What position do you play?</label>
+              <input
+                id="position"
+                type="text"
+                placeholder="e.g. Striker"
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
+                className="border bg-transparent px-3 py-2 rounded-md w-full"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="why">Why do you want to join this program?</label>
+              <input
+                id="why"
+                type="text"
+                placeholder="Optional"
+                value={whyJoin}
+                onChange={(e) => setWhyJoin(e.target.value)}
+                className="border bg-transparent px-3 py-2 rounded-md w-full"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setStep("done")}>Finish</Button>
           </div>
         </div>
       ) : (
-        <>
-          <Link
-            href="/"
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "absolute left-4 top-4 md:left-8 md:top-8"
-            )}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back
-          </Link>
-          <div className="mx-auto flex w-full flex-col justify-center gap-6 sm:w-[350px]">
-            <div className="flex flex-col gap-2 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">Welcome to Magic UI</h1>
-              <p className="text-sm text-muted-foreground">Sign up for an account</p>
-            </div>
-            <UserAuthForm />
-            <p className="px-8 text-center text-sm text-muted-foreground">
-              <Link
-                href="/signin"
-                className="hover:text-brand underline underline-offset-4"
-              >
-                Already have an account? Sign In
-              </Link>
-            </p>
-          </div>
-        </>
+        // DONE step
+        <div className="mx-auto flex w-full h-full flex-col items-center justify-center gap-6 sm:w-[400px] text-center">
+          <h1 className="text-3xl font-bold">You&apos;re all set!</h1>
+          <p className="text-gray-400">Thank you for signing up. We&apos;re redirecting you to the homepage…</p>
+          <p className="text-gray-500 italic max-w-xs">“We’ll review your form and reply within 24–48 hours with next steps.”</p>
+        </div>
+      )}
+      {/* Auto redirect on done */}
+      {step === "done" && (
+        <></>
       )}
     </>
   );

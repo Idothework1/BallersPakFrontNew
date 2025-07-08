@@ -176,10 +176,13 @@ export default function CallToActionSection() {
               </div>
               <div className="z-10 mt-4 flex flex-col items-center text-center text-primary">
                 <h1 className="text-3xl font-bold lg:text-4xl">
-                  Limited spots remaining!
+                  🚨 Limited Spots: Pro Feedback Slots Close in 72 Hours
                 </h1>
                 <p className="mt-2">
-                  Only a few slots left for our next training cohort—claim yours today.
+                  If you&apos;re serious about becoming a pro, now’s your moment.
+                </p>
+                <p className="text-sm text-center">
+                  Join the only online program in Pakistan that gives you real access to real pros.
                 </p>
                 <Link
                   href="#"
@@ -191,7 +194,7 @@ export default function CallToActionSection() {
                     "group mt-4 rounded-[2rem] px-6"
                   )}
                 >
-                  Get Started
+                  Join Now
                   <ChevronRight className="ml-1 size-4 transition-all duration-300 ease-out group-hover:translate-x-1" />
                 </Link>
               </div>

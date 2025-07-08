@@ -1,11 +1,17 @@
-import ClientSection from "@/components/landing/client-section";
-import CallToActionSection from "@/components/landing/cta-section";
 import HeroSection from "@/components/landing/hero-section";
-import { SphereMask } from "@/components/magicui/sphere-mask";
-import AboutSection from "@/components/landing/about-section";
-import MissionSection from "@/components/landing/mission-section";
 import FeatureCardsSection from "@/components/landing/feature-cards-section";
 import PlayersMarqueeSection from "@/components/landing/players-marquee-section";
+import CallToActionSection from "@/components/landing/cta-section";
+import ProblemSection from "@/components/landing/problem-section";
+import SolutionSection from "@/components/landing/solution-section";
+import EliteCoachesSection from "@/components/landing/elite-coaches-section";
+import HowItWorksSection from "@/components/landing/how-it-works-section";
+import RoadmapSection from "@/components/landing/roadmap-section";
+import RealStoriesSection from "@/components/landing/real-stories-section";
+import FAQSection from "@/components/landing/faq-section";
+import ClientSection from "@/components/landing/client-section";
+import ChooseStartSection from "@/components/landing/choose-start-section";
+import { SphereMask } from "@/components/magicui/sphere-mask";
 
 export default async function Page() {
   return (
@@ -13,11 +19,17 @@ export default async function Page() {
       <HeroSection />
       <ClientSection />
       <SphereMask />
-      <AboutSection />
-      <MissionSection />
-      <FeatureCardsSection />
+      <ProblemSection />
+      <SolutionSection />
+      <EliteCoachesSection />
       <PlayersMarqueeSection />
+      <FeatureCardsSection />
+      <HowItWorksSection />
+      <RoadmapSection />
+      <RealStoriesSection />
+      <ChooseStartSection />
       <CallToActionSection />
+      <FAQSection />
     </>
   );
 }
