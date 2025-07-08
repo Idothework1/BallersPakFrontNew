@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ballerspak-backend
+    env: node
+    plan: free          # choose any plan you like
+    rootDir: backend    # run build/start inside backend folder
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+
+    disk:
+      name: signup-data
+      mountPath: ./data   # persisted CSV/XLSX live here
+      sizeGB: 1 
