@@ -1,38 +1,19 @@
-import { promises as fs } from "fs";
-import path from "path";
-import ExcelJS from "exceljs";
 import nextDynamic from "next/dynamic";
 
 const AdminTable = nextDynamic(() => import("@/components/admin/AdminTable"), { ssr: false });
 
-// Allow dynamic rendering so we read fresh data on each request
+// We always want fresh data from the backend
 export const dynamic = "force-dynamic";
 
 async function getSignups() {
-  const dataDir = path.join(process.cwd(), "data");
-  const xlsxPath = path.join(dataDir, "signups.xlsx");
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? "";
   try {
-    await fs.access(xlsxPath);
+    const res = await fetch(`${apiBase}/api/signups`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return (await res.json()) as Record<string, string>[];
   } catch {
     return [];
   }
-
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(xlsxPath);
-  const worksheet = workbook.getWorksheet("Signups") ?? workbook.worksheets[0];
-  if (!worksheet) return [];
-
-  const headers = (worksheet.getRow(1).values as string[]).slice(1);
-  const rows = worksheet.getRows(2, worksheet.rowCount - 1) ?? [];
-
-  return rows.map((row) => {
-    const values = row.values as (string | number | undefined)[];
-    const obj: Record<string, string> = {};
-    headers.forEach((header, idx) => {
-      obj[header] = String(values[idx + 1] ?? "");
-    });
-    return obj;
-  });
 }
 
 export default async function AdminPage() {

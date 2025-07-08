@@ -71,7 +71,9 @@ export default function SignupFlow() {
       } as const;
 
       // Fire and forget – we still redirect even if saving fails
-      fetch("/api/signup", {
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE ?? "";
+      const endpoint = `${apiBase}/api/signup`;
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
