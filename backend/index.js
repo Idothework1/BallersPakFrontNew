@@ -97,12 +97,20 @@ app.post("/api/signup", async (req, res) => {
 app.get("/api/signups", async (_req, res) => {
   try {
     const xlsxPath = path.join(process.cwd(), "data", "signups.xlsx");
+
+    // If file doesn't exist yet, return empty array
+    try {
+      await fs.access(xlsxPath);
+    } catch {
+      return res.json([]);
+    }
+
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(xlsxPath);
     const worksheet = workbook.getWorksheet("Signups") || workbook.worksheets[0];
     if (!worksheet) return res.json([]);
 
-    const headers = worksheet.getRow(1).values.slice(1);
+    const headers = (worksheet.getRow(1).values ?? []).slice(1);
     const rows = worksheet.getRows(2, worksheet.rowCount - 1) || [];
 
     const data = rows.map((row) => {
@@ -113,11 +121,10 @@ app.get("/api/signups", async (_req, res) => {
       return obj;
     });
 
-    res.json(data);
+    return res.json(data);
   } catch (err) {
-    if (err.code === "ENOENT") return res.json([]);
     console.error("Error reading signups:", err);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    return res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
 
