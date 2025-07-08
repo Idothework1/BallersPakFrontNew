@@ -1,6 +1,48 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function ChooseStartSection() {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const router = useRouter();
+
+  const handleApplyClick = () => {
+    setIsTransitioning(true);
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("pageTransition"));
+    }
+
+    // After fade to black completes, navigate to signup
+    setTimeout(() => {
+      router.push("/signup");
+    }, 1000); // match CSS duration
+  };
+
+  return (
+    <>
+      {/* Fade to black overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 z-50 bg-black transition-opacity duration-1000 pointer-events-none",
+          isTransitioning ? "opacity-100" : "opacity-0"
+        )}
+      />
+
+      {/* Rest of the section UI */}
+      <ChooseStartSectionContent handleApplyClick={handleApplyClick} />
+    </>
+  );
+}
+
+interface ChooseStartSectionContentProps {
+  handleApplyClick: () => void;
+}
+
+function ChooseStartSectionContent({ handleApplyClick }: ChooseStartSectionContentProps) {
   return (
     <section id="choose-start" className="mx-auto max-w-[80rem] px-6 md:px-8 py-20 text-center">
       <h2 className="text-4xl font-semibold text-white mb-4">Choose How You Want to Start</h2>
@@ -45,7 +87,14 @@ export default function ChooseStartSection() {
               <li key={item}>{item}</li>
             ))}
           </ul>
-          <Button variant="outline" size="lg" className="border-blue-400 text-blue-400 hover:bg-blue-400/10 w-full md:w-auto">Apply Now</Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="border-blue-400 text-blue-400 hover:bg-blue-400/10 w-full md:w-auto"
+            onClick={handleApplyClick}
+          >
+            Apply Now
+          </Button>
           <p className="mt-4 text-gray-400 text-sm">
             Recommended for players who want a personal plan before enrolling.
           </p>

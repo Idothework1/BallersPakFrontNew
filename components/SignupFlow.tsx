@@ -49,12 +49,41 @@ export default function SignupFlow() {
 
   const handleConfirmYes = () => setShowConfirm(false);
 
-  // Redirect after completion
+  // Send data to backend and then redirect when user completes the flow
   useEffect(() => {
     if (step === "done") {
+      // Prepare payload in intuitive format
+      const payload = {
+        firstName,
+        lastName,
+        playedBefore,
+        experienceLevel,
+        playedClub,
+        clubName,
+        gender,
+        hasDisability,
+        location,
+        email,
+        phone,
+        position,
+        goal,
+        whyJoin,
+      } as const;
+
+      // Fire and forget – we still redirect even if saving fails
+      fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("Failed to save signup data", err);
+      });
+
       const timer = setTimeout(() => {
         router.push("/");
       }, 2000);
+
       return () => clearTimeout(timer);
     }
   }, [step, router]);
