@@ -2,9 +2,16 @@ import express from "express";
 import path from "path";
 import { promises as fs } from "fs";
 import ExcelJS from "exceljs";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
+// Health check route
+app.get("/", (_req, res) => {
+  res.send("BallersPak backend is running 🎉");
+});
 
 // Helper functions
 function buildHeaders() {
