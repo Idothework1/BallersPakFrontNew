@@ -4,7 +4,6 @@ import CallToActionSection from "@/components/landing/cta-section";
 import ProblemSection from "@/components/landing/problem-section";
 import SolutionSection from "@/components/landing/solution-section";
 import EliteCoachesSection from "@/components/landing/elite-coaches-section";
-import ElitePlayersSection from "@/components/landing/elite-players-section";
 import HowItWorksSection from "@/components/landing/how-it-works-section";
 import RoadmapSection from "@/components/landing/roadmap-section";
 import FAQSection from "@/components/landing/faq-section";
@@ -21,7 +20,6 @@ export default async function Page() {
       <ProblemSection />
       <SolutionSection />
       <EliteCoachesSection />
-      <ElitePlayersSection />
       <FeatureCardsSection />
       <HowItWorksSection />
       <RoadmapSection />
