@@ -54,7 +54,7 @@
 
     /* Custom properties */
     --navigation-height: 3.5rem;
-    --color-one: #4ade80; /* emerald green */
+    --color-one: #6ee7b7; /* lighter emerald */
     --color-two: #06b6d4; /* cyan */
     --color-three: #99f6e4; /* light teal */
 
@@ -94,6 +94,9 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
   }
+  .theme {
+    --animate-shine: shine var(--duration) infinite linear;
+  }
 }
 
 @layer base {
@@ -104,5 +107,28 @@
     @apply bg-background text-foreground;
     --font-sans: 'Gobold';
     font-family: var(--font-sans), ui-sans-serif, system-ui;
+  }
+}
+
+/* Hide default marker on <summary> so we can use a custom icon */
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@theme inline {
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;
+    }
+  50% {
+    background-position: 100% 100%;
+    }
+  to {
+    background-position: 0% 0%;
+    }
   }
 }

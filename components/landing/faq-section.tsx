@@ -1,3 +1,5 @@
+import { ChevronRight } from "lucide-react";
+
 export default function FAQSection() {
   const faqs = [
     {
@@ -31,11 +33,12 @@ export default function FAQSection() {
       <h2 className="text-center text-4xl font-semibold text-white mb-12">FAQs</h2>
       <div className="space-y-4">
         {faqs.map((item) => (
-          <details key={item.q} className="rounded-lg bg-gray-800/30 border border-gray-700 p-4">
-            <summary className="cursor-pointer text-lg font-medium text-white">
-              {item.q}
+          <details key={item.q} className="group rounded-lg bg-gray-800/30 border border-gray-700">
+            <summary className="flex cursor-pointer items-center justify-between p-4 text-lg font-medium text-white">
+              <span>{item.q}</span>
+              <ChevronRight className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-open:rotate-90" />
             </summary>
-            <p className="mt-2 text-gray-400">{item.a}</p>
+            <p className="px-4 pb-4 text-gray-400">{item.a}</p>
           </details>
         ))}
       </div>

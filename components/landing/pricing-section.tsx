@@ -127,7 +127,7 @@ export default function PricingSection() {
             <div
               key={price.id}
               className={cn(
-                "relative flex max-w-[400px] flex-col gap-8 rounded-2xl border p-4 text-black dark:text-white overflow-hidden",
+                "relative flex max-w-[400px] flex-col gap-8 rounded-2xl border p-4 text-black dark:text-white overflow-hidden shadow-[0_0_15px_0_rgba(110,231,183,0.6)]",
                 {
                   "border-2 border-[var(--color-one)] dark:border-[var(--color-one)]":
                     price.isMostPopular,
@@ -202,7 +202,7 @@ export default function PricingSection() {
                       key={idx}
                       className="flex items-center gap-3 text-xs font-medium text-black dark:text-white"
                     >
-                      <CheckIcon className="h-5 w-5 shrink-0 rounded-full bg-green-400 p-[2px] text-black dark:text-white" />
+                      <CheckIcon className="h-5 w-5 shrink-0 rounded-full bg-green-300 p-[2px] text-black dark:text-white" />
                       <span className="flex">{feature}</span>
                     </li>
                   ))}
