@@ -12,6 +12,18 @@ export default function FAQSection() {
       q: "Will I really hear from the pro players?",
       a: "Yes. Our elite players host monthly live sessions + review selected student videos.",
     },
+    {
+      q: "How often are the sessions?",
+      a: "It depends on the package, but you’ll get at least 2 live sessions per week— and you can join up to 7 sessions weekly if you choose the full-access option.",
+    },
+    {
+      q: "How does the online academy actually work?",
+      a: "It’s not just pre-recorded videos. You’ll join real training sessions and live lectures with our mentors and coaches. Each week you receive training plans, tactical breakdowns, mindset work, and career guidance—all structured so you can train independently and progress faster.",
+    },
+    {
+      q: "How old do I need to be to join the academy?",
+      a: "We currently work with committed players between the ages of 10 and 23.",
+    },
   ];
 
   return (

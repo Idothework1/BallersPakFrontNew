@@ -12,23 +12,13 @@ import { useRouter } from "next/navigation";
 const menuItem = [
   {
     id: 1,
-    label: "Features",
-    href: "/features",
+    label: "About the Academy",
+    href: "/about",
   },
   {
     id: 2,
-    label: "Pricing",
-    href: "#",
-  },
-  {
-    id: 3,
-    label: "Careers",
-    href: "#",
-  },
-  {
-    id: 4,
-    label: "Contact Us",
-    href: "#",
+    label: "Ambassador Program",
+    href: "/ambassador",
   },
 ];
 
@@ -133,6 +123,20 @@ export function SiteHeader() {
               className="h-28 w-auto mt-14"
             />
           </Link>
+
+          {/* Desktop navigation */}
+          <ul className="absolute left-1/2 top-1/2 hidden md:flex -translate-x-1/2 -translate-y-1/2 items-center gap-8">
+            {menuItem.map((item) => (
+              <li key={item.id}>
+                <Link
+                  href={item.href}
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
 
           <div className="ml-auto flex h-full items-center">
             <Link

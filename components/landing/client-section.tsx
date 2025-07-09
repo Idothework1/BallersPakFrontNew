@@ -20,36 +20,16 @@ export default function ClientSection() {
                   src: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
                 },
                 {
-                  id: "Barcelona",
-                  src: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+                  id: "Villarreal",
+                  src: "/villa.png",
                 },
                 {
-                  id: "ManUnited",
-                  src: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+                  id: "BayernMunich",
+                  src: "/bayern.png",
                 },
                 {
-                  id: "PSG",
-                  src: "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
-                },
-                {
-                  id: "Chelsea",
-                  src: "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg",
-                },
-                {
-                  id: "Liverpool",
-                  src: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
-                },
-                {
-                  id: "Arsenal",
-                  src: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
-                },
-                {
-                  id: "ACMilan",
-                  src: "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
-                },
-                {
-                  id: "Dortmund",
-                  src: "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
+                  id: "RBLeipzig",
+                  src: "https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg",
                 },
               ].map((club) => (
                 <Image
@@ -58,7 +38,7 @@ export default function ClientSection() {
                   alt={`${club.id} logo`}
                   width={64}
                   height={64}
-                  className="h-16 w-auto px-6 object-contain grayscale opacity-60 dark:grayscale"
+                  className="h-16 w-auto px-6 object-contain opacity-60"
                 />
               ))}
             </Marquee>

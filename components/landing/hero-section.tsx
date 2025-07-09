@@ -12,9 +12,7 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
-import { PointerHighlight } from "@/components/ui/pointer-highlight";
 import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
-import UnderlineAnimation from "@/components/magicui/underline-animation";
 
 export default function HeroSection() {
   const ref = useRef(null);
@@ -68,27 +66,25 @@ export default function HeroSection() {
         </h1>
 
         <h2 className="mb-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:300ms] text-balance">
-          Europa&apos;s {" "}
-          <span className="relative inline-block">
-            Most Popular Academy
-            <UnderlineAnimation />
-          </span>{" "}is{" "}
-          <PointerHighlight>
-            <span>now Online</span>
-          </PointerHighlight>{" "}
-          in <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block">Pakistan</AnimatedGradientText>
+          Train Like a UEFA Champion — From Your Home in {" "}
+          <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block">Pakistan</AnimatedGradientText>
         </h2>
-        <p className="mb-12 text-lg tracking-tight text-gray-400 md:text-xl text-balance translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-          Unlock your potential and train with the elite. Join the largest, most ambitious football community in
-          <AnimatedGradientText
-            speed={2}
-            colorFrom="#4ade80"
-            colorTo="#06b6d4"
-            className="inline-block mx-1 font-semibold"
-          >
-            Pakistan
+        <p className="mb-4 text-lg tracking-tight text-gray-400 md:text-xl text-balance translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+          💥 Exclusive Online Coaching from Stars Like
+          <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block font-semibold mx-1">
+            Brahim Díaz
           </AnimatedGradientText>
-          and elevate your game from anywhere in the world.
+          ,
+          <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block font-semibold mx-1">
+            Luka Modrić
+          </AnimatedGradientText>
+          &
+          <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block font-semibold mx-1">
+            Raphaël Varane
+          </AnimatedGradientText>
+        </p>
+        <p className="mb-12 text-lg tracking-tight text-gray-400 md:text-xl text-balance translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:500ms]">
+          Build elite-level technique, tactical intelligence, and a winning mindset—directly mentored by Champions League legends.
         </p>
         <Button 
           onClick={handleJoinClick}
