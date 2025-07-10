@@ -26,8 +26,8 @@ export default function FeatureCardsSection() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         {cards.map((card) => (
           <CardContainer key={card.title} containerClassName="py-0">
-            <CardBody className="rounded-xl bg-gray-800/30 px-12 pb-12 pt-4 border border-gray-700 text-center">
-              <CardItem translateZ={60} className="mb-4 flex justify-center">
+            <CardBody className="rounded-xl bg-gray-800/30 px-16 pb-16 pt-0 border border-gray-700 text-center">
+              <CardItem translateZ={60} className="mb-4 flex justify-center items-center mt-2">
                 <Image 
                   src={card.image} 
                   alt={card.title}
@@ -36,7 +36,7 @@ export default function FeatureCardsSection() {
                   className="object-contain"
                 />
               </CardItem>
-              <CardItem translateZ={50} className="text-3xl font-bold text-white mb-4">
+              <CardItem translateZ={50} className="text-3xl font-bold text-white mb-4 text-center w-full">
                 {card.title}
               </CardItem>
               <CardItem translateZ={30} className="text-gray-400 text-sm">

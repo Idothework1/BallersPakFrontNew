@@ -31,7 +31,7 @@ export default function ClientSection() {
     >
       <div className="pt-4 md:pt-6 pb-10 md:pb-14">
         <div className="mx-auto max-w-screen-xl px-2 md:px-4 lg:px-8">
-          <h2 className="text-center text-xs md:text-sm font-semibold text-gray-600 mb-4 md:mb-6">
+          <h2 className="text-center text-lg md:text-xl font-semibold text-gray-600 mb-4 md:mb-6">
             TRUSTED BY TEAMS FROM AROUND THE WORLD
           </h2>
           <div className="relative flex w-full items-center justify-center overflow-hidden">
@@ -43,9 +43,9 @@ export default function ClientSection() {
                     key={`${club.id}-${index}`}
                     src={club.src}
                     alt={`${club.id} logo`}
-                    width={56}
-                    height={56}
-                    className="h-14 w-auto px-4 object-contain"
+                    width={100}
+                    height={100}
+                    className="h-[100px] w-auto px-4 object-contain"
                   />
                 ))}
               </Marquee>
@@ -59,9 +59,9 @@ export default function ClientSection() {
                     key={club.id}
                     src={club.src}
                     alt={`${club.id} logo`}
-                    width={64}
-                    height={64}
-                    className="h-16 w-auto px-6 object-contain"
+                    width={120}
+                    height={120}
+                    className="h-[120px] w-auto px-6 object-contain"
                   />
                 ))}
               </Marquee>
