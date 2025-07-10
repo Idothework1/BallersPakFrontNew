@@ -25,14 +25,14 @@ export default function AmbassadorPage() {
             </div>
             
             <p className="text-gray-300 leading-relaxed text-center text-sm md:text-base">
-              We're building a movement to bring elite football training to every corner of Pakistan. If you believe in our mission and want to be part of something bigger, join our Ambassador Program.
+              We&apos;re building a movement to bring elite football training to every corner of Pakistan. If you believe in our mission and want to be part of something bigger, join our Ambassador Program.
             </p>
           </div>
 
           {/* Who It's For */}
           <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
             <h3 className="text-lg md:text-xl font-bold text-white mb-3 text-center">
-              Who It's For
+              Who It&apos;s For
             </h3>
             <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
             
@@ -61,7 +61,7 @@ export default function AmbassadorPage() {
           {/* What You'll Get */}
           <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
             <h3 className="text-lg md:text-xl font-bold text-white mb-3 text-center">
-              What You'll Get
+              What You&apos;ll Get
             </h3>
             <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
             

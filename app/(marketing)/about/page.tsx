@@ -26,15 +26,15 @@ export default function AboutPage() {
             
             <div className="space-y-3 md:space-y-4 text-sm md:text-base">
               <p className="text-gray-300 leading-relaxed">
-                Hi, I'm <span className="text-green-400">Aamir</span> — a football coach, player mentor, and believer in unlocking potential.
+                Hi, I&apos;m <span className="text-green-400">Aamir</span> — a football coach, player mentor, and believer in unlocking potential.
               </p>
               
               <p className="text-gray-300 leading-relaxed">
-                Over the past <span className="text-green-400">10+ years</span>, I've worked with youth athletes around the world, helping them develop not just their skills, but their mindset. I've seen firsthand how young talent in Pakistan is often overlooked — not because it lacks passion or potential, but because it lacks access.
+                Over the past <span className="text-green-400">10+ years</span>, I&apos;ve worked with youth athletes around the world, helping them develop not just their skills, but their mindset. I&apos;ve seen firsthand how young talent in Pakistan is often overlooked — not because it lacks passion or potential, but because it lacks access.
               </p>
               
               <p className="text-gray-300 leading-relaxed">
-                That's why I built this platform: to give ambitious players in Pakistan the chance to train like the pros — and learn directly from those playing at the top level in Europe today.
+                That&apos;s why I built this platform: to give ambitious players in Pakistan the chance to train like the pros — and learn directly from those playing at the top level in Europe today.
               </p>
               
               <p className="text-gray-300 leading-relaxed">
@@ -56,10 +56,10 @@ export default function AboutPage() {
 
             <div className="text-center bg-gray-800/50 rounded-lg p-3 md:p-4 border border-gray-700">
               <p className="text-white font-medium mb-2 text-sm md:text-base">
-                If you're serious about the game, and you dream big — you're in the right place.
+                If you&apos;re serious about the game, and you dream big — you&apos;re in the right place.
               </p>
               <p className="text-green-400 font-semibold mb-3">
-                Let's get to work.
+                Let&apos;s get to work.
               </p>
               <p className="text-gray-400 text-xs">
                 — Aamir Mushtaq
