@@ -127,7 +127,7 @@ export default function PricingSection() {
               "Weekly elite video training sessions",
               "Personalized certificate (A-Team Track)",
               "Priority for scouting Nomination and Trial, if you fit the part",
-              "Opportunity for a transfer to top clubs if we believe you're ready",
+              "Opportunity for a transfer to top clubs if we believe you&apos;re ready",
               "Bonus: Support building your highlight reel and Professional CV",
             ].map((feature) => (
               <li key={feature} className="flex items-start gap-3">

@@ -14,7 +14,7 @@ export default function ProblemSection() {
         {/* Subheading with emphasis */}
         <div className="inline-block bg-red-500/20 border border-red-500/30 rounded-full px-6 py-3 mb-12">
           <h3 className="text-lg md:text-xl font-semibold text-red-300">
-            You're Not Failing—The System Is
+            You&apos;re Not Failing—The System Is
           </h3>
         </div>
 
@@ -41,9 +41,9 @@ export default function ProblemSection() {
 
         {/* Testimonial card */}
         <div className="mx-auto max-w-3xl bg-gradient-to-r from-gray-900/80 to-gray-800/80 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm">
-          <div className="text-4xl text-gray-500 mb-4">"</div>
+          <div className="text-4xl text-gray-500 mb-4">&ldquo;</div>
           <blockquote className="text-lg md:text-xl text-gray-300 italic leading-relaxed mb-6">
-            I used to train every day—but I didn't know if I was doing it right. Then I got feedback
+            I used to train every day—but I didn&apos;t know if I was doing it right. Then I got feedback
             from <span className="font-bold text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Brahim Díaz</span> and everything changed.
           </blockquote>
           <div className="text-right">

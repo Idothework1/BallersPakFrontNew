@@ -9,7 +9,7 @@ export default function SolutionSection() {
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
           Introducing the 
           <span className="block bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
-            "Pro-Level Training System"
+            &ldquo;Pro-Level Training System&rdquo;
           </span>
         </h2>
         
