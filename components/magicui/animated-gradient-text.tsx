@@ -29,7 +29,7 @@ export function AnimatedGradientText({
 
   const style: React.CSSProperties = {
     backgroundImage: `linear-gradient(90deg, ${colorFrom}, ${colorTo}, ${colorFrom})`,
-    backgroundSize: "200% 200%",
+    backgroundSize: "300% 300%",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     color: "transparent",

@@ -1,19 +1,23 @@
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export default function FeatureCardsSection() {
   const cards = [
     {
       title: "3,500+ Exercises",
       desc: "Drills to sharpen every aspect of your game.",
+      image: "/p1.png",
     },
     {
       title: "30+ Programs",
       desc: "Structured pathways for progressive growth.",
+      image: "/p2.png",
     },
     {
       title: "Global Community",
       desc: "Train alongside players around the world.",
+      image: "/p3.png",
     },
   ];
 
@@ -22,7 +26,16 @@ export default function FeatureCardsSection() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         {cards.map((card) => (
           <CardContainer key={card.title} containerClassName="py-0">
-            <CardBody className="rounded-xl bg-gray-800/30 p-10 border border-gray-700 text-center">
+            <CardBody className="rounded-xl bg-gray-800/30 px-12 pb-12 pt-4 border border-gray-700 text-center">
+              <CardItem translateZ={60} className="mb-4 flex justify-center">
+                <Image 
+                  src={card.image} 
+                  alt={card.title}
+                  width={270}
+                  height={270}
+                  className="object-contain"
+                />
+              </CardItem>
               <CardItem translateZ={50} className="text-3xl font-bold text-white mb-4">
                 {card.title}
               </CardItem>

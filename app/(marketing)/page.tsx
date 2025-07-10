@@ -6,9 +6,9 @@ import SolutionSection from "@/components/landing/solution-section";
 import EliteCoachesSection from "@/components/landing/elite-coaches-section";
 import HowItWorksSection from "@/components/landing/how-it-works-section";
 import RoadmapSection from "@/components/landing/roadmap-section";
+import PricingSection from "@/components/landing/pricing-section";
 import FAQSection from "@/components/landing/faq-section";
 import ClientSection from "@/components/landing/client-section";
-import ChooseStartSection from "@/components/landing/choose-start-section";
 import { SphereMask } from "@/components/magicui/sphere-mask";
 
 export default async function Page() {
@@ -23,7 +23,7 @@ export default async function Page() {
       <FeatureCardsSection />
       <HowItWorksSection />
       <RoadmapSection />
-      <ChooseStartSection />
+      <PricingSection />
       <CallToActionSection />
       <FAQSection />
     </>

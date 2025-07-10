@@ -3,86 +3,161 @@
 import { Button } from "@/components/ui/button";
 
 export default function AmbassadorPage() {
-  const responsibilities = [
-    "Spread the Word: Invite your circle to join BallersPak.",
-    "Engage the Community: Be the bridge between new users and the BallersPak ecosystem.",
-    "Grow with Us: Represent the brand online and offline.",
-  ];
-
-  const perks = [
-    "Earn rewards for every successful referral",
-    "Exclusive access to insider content & early features",
-    "Build cred with a verified Ambassador badge",
-  ];
-
-  const candidates = [
-    "Campus leaders, content creators & community builders",
-    "Passionate about tech, lifestyle, and helping others grow",
-    "Active on social media or within a niche community",
-  ];
-
   return (
-    <section className="mx-auto w-full max-w-3xl px-6 py-24 flex flex-col items-center text-center space-y-10">
-      {/* Heading */}
-      <div className="space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold text-white flex flex-col gap-1">
-          <span>🎓 Become an Official BallersPak Ambassador</span>
-        </h1>
-        <p className="text-xl font-semibold text-primary-foreground/90">
-          Be More Than Just a Fan. Be a Leader. Join the movement. Get rewarded.
-        </p>
-      </div>
+    <div className="min-h-screen bg-black overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="mx-auto max-w-6xl px-4 md:px-6 py-12 md:py-20">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            🌟 Become an Official Ambassador
+          </h1>
+          <div className="w-20 h-1 bg-green-500 mx-auto"></div>
+        </div>
 
-      {/* Intro paragraph */}
-      <p className="text-lg text-gray-300 leading-relaxed">
-        Are you passionate about building communities and helping others level up? As an official BallersPak
-        Ambassador, you’ll represent the leading platform for bold, driven individuals. Whether you&apos;re on campus,
-        online, or in your local scene — you’ll help bring more people into the Pak, and earn exclusive rewards while
-        doing it.
-      </p>
+        {/* Main Content */}
+        <div className="space-y-6 md:space-y-8">
+          {/* Introduction */}
+          <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
+            <div className="text-center mb-4 md:mb-6">
+              <h2 className="text-lg md:text-xl font-bold text-white mb-3">
+                Help us grow the future of football in Pakistan — and get rewarded for it.
+              </h2>
+            </div>
+            
+            <p className="text-gray-300 leading-relaxed text-center text-sm md:text-base">
+              We're building a movement to bring elite football training to every corner of Pakistan. If you believe in our mission and want to be part of something bigger, join our Ambassador Program.
+            </p>
+          </div>
 
-      {/* Responsibilities */}
-      <div className="w-full text-left space-y-4">
-        <h2 className="text-2xl font-semibold text-white">💼 What You’ll Do</h2>
-        <ul className="list-disc ml-6 space-y-2 text-gray-300">
-          {responsibilities.map((r) => (
-            <li key={r}>{r}</li>
-          ))}
-        </ul>
-      </div>
+          {/* Who It's For */}
+          <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
+            <h3 className="text-lg md:text-xl font-bold text-white mb-3 text-center">
+              Who It's For
+            </h3>
+            <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
+            
+            <div className="space-y-3 text-sm md:text-base">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Passionate players, coaches, or fans who want to promote football
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Anyone connected to a school, academy, or local club
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Creators and influencers in the sports or youth space
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {/* Perks */}
-      <div className="w-full text-left space-y-4">
-        <h2 className="text-2xl font-semibold text-white">🎁 Perks & Benefits</h2>
-        <ul className="list-disc ml-6 space-y-2 text-gray-300">
-          {perks.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ul>
-      </div>
+          {/* What You'll Get */}
+          <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
+            <h3 className="text-lg md:text-xl font-bold text-white mb-3 text-center">
+              What You'll Get
+            </h3>
+            <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
+            
+            <div className="space-y-3 text-sm md:text-base">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Earn rewards for every new member you refer
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Get early access to new training drops and merch
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Feature on our website + social channels
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Special invite-only calls with pro players & mentors
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p className="text-gray-300 leading-relaxed">
+                  Build your resume — great for players, students, and youth leaders
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {/* Who we're looking for */}
-      <div className="w-full text-left space-y-4">
-        <h2 className="text-2xl font-semibold text-white">🌍 Who We&apos;re Looking For</h2>
-        <ul className="list-disc ml-6 space-y-2 text-gray-300">
-          {candidates.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
-        </ul>
-      </div>
+          {/* How It Works */}
+          <div className="w-full rounded-lg p-4 md:p-6 border border-gray-800 bg-gray-900/50">
+            <h3 className="text-lg md:text-xl font-bold text-white mb-3 text-center">
+              How It Works
+            </h3>
+            <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-black">
+                  1
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Apply</h4>
+                <p className="text-gray-400 text-xs">
+                  Apply with a short form
+                </p>
+              </div>
+              
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-black">
+                  2
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Get Tools</h4>
+                <p className="text-gray-400 text-xs">
+                  Get your personal link & toolkit
+                </p>
+              </div>
 
-      {/* CTA */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-white">📝 Ready to Represent?</h2>
-        <a href="mailto:ambassador@ballerspak.com">
-          <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-green-400 hover:opacity-90">
-            Apply Now
-          </Button>
-        </a>
-        <p className="text-sm text-gray-400 max-w-md">
-          Together, we don’t just grow — we level up.
-        </p>
-      </div>
-    </section>
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center font-bold text-black">
+                  3
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Earn Rewards</h4>
+                <p className="text-gray-400 text-xs">
+                  Start spreading the word and earning rewards
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="w-full rounded-lg p-6 md:p-8 border border-gray-800 bg-gray-900/50 text-center">
+            <div className="space-y-4">
+              <h3 className="text-lg md:text-xl font-bold text-white">
+                Ready to Make an Impact?
+              </h3>
+              <p className="text-gray-300 text-sm md:text-base mb-6">
+                Join our mission to revolutionize football training in Pakistan
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-green-500 to-emerald-400 hover:opacity-90 text-black font-semibold px-8 py-3"
+              >
+                🟢 Apply to Be an Ambassador
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 } 

@@ -7,7 +7,7 @@ export default function MissionSection() {
       <h2 className="text-4xl font-semibold text-white mb-6">Our Mission</h2>
       <p className="mx-auto max-w-3xl text-lg text-gray-400 mb-10">
         To elevate the standard of football in Pakistan by providing aspiring
-        players—ages <span className="font-semibold text-white">7-18+</span>—with
+        players—ages <span className="font-semibold text-white">8-18</span>—with
         world-class training, resources, and community. We believe talent is
         everywhere, and with the right support, Pakistani athletes can compete
         on any stage.

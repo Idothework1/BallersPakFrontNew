@@ -5,44 +5,30 @@ import TextShimmer from "@/components/magicui/text-shimmer";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { TextAnimate } from "@/components/magicui/text-animate";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
 import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
 
 export default function HeroSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const router = useRouter();
 
   const handleJoinClick = () => {
-    setIsTransitioning(true);
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("pageTransition"));
+    // Scroll to pricing section smoothly
+    const pricingSection = document.getElementById("pricing");
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
     }
-
-    // After fade to black completes, navigate to signup
-    setTimeout(() => {
-      router.push("/signup");
-    }, 1000); // match CSS duration
   };
 
   return (
     <>
-      {/* Fade to black overlay */}
-      <div
-        className={cn(
-          "fixed inset-0 z-50 bg-black transition-opacity duration-1000 pointer-events-none",
-          isTransitioning ? "opacity-100" : "opacity-0"
-        )}
-      />
-
       <section
         id="hero"
         className="relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8"
@@ -59,7 +45,7 @@ export default function HeroSection() {
             speed={2}
             colorFrom="#4ade80"
             colorTo="#06b6d4"
-            className="inline-block"
+            className="inline-block px-2"
           >
             Pak
           </AnimatedGradientText>

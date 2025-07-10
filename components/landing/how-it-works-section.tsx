@@ -35,7 +35,7 @@ export default function HowItWorksSection() {
         ))}
       </div>
       <p className="mt-8 text-gray-400 text-sm">
-        🧠 Training is designed for players aged 13–18. Only 2 hours/week required.
+        🧠 Training is designed for players aged 8–18. Only 2 hours/week required.
       </p>
     </section>
   );

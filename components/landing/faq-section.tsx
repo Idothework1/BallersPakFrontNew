@@ -24,7 +24,7 @@ export default function FAQSection() {
     },
     {
       q: "How old do I need to be to join the academy?",
-      a: "We currently work with committed players between the ages of 10 and 23.",
+      a: "We currently work with committed players between the ages of 8 and 18.",
     },
   ];
 

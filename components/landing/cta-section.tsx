@@ -1,19 +1,17 @@
 "use client";
 
 import Marquee from "@/components/magicui/marquee";
-import { buttonVariants } from "@/components/ui/button";
+import { PulsatingButton } from "@/components/magicui/pulsating-button";
 import { cn } from "@/lib/utils";
 import { motion, useAnimation, useInView } from "framer-motion";
 import {
   BarChart,
-  ChevronRight,
   File,
   Globe,
   HeartHandshake,
   Rss,
   Shield,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
 const tiles = [
@@ -184,19 +182,20 @@ export default function CallToActionSection() {
                 <p className="text-sm text-center">
                   Join the only online program in Pakistan that gives you real access to real pros.
                 </p>
-                <Link
-                  href="#"
-                  className={cn(
-                    buttonVariants({
-                      size: "lg",
-                      variant: "outline",
-                    }),
-                    "group mt-4 rounded-[2rem] px-6"
-                  )}
+                <PulsatingButton 
+                  className="mt-4"
+                  onClick={() => {
+                    const pricingSection = document.getElementById("pricing");
+                    if (pricingSection) {
+                      pricingSection.scrollIntoView({ 
+                        behavior: "smooth",
+                        block: "start"
+                      });
+                    }
+                  }}
                 >
                   Join Now
-                  <ChevronRight className="ml-1 size-4 transition-all duration-300 ease-out group-hover:translate-x-1" />
-                </Link>
+                </PulsatingButton>
               </div>
               <div className="absolute inset-0 -z-10 rounded-full  bg-backtround opacity-40 blur-xl dark:bg-background" />
             </div>
