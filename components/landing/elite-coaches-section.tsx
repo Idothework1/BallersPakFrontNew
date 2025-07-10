@@ -24,6 +24,24 @@ const coaches = [
     img: "https://upload.wikimedia.org/wikipedia/commons/8/86/Raphael_Varane_2022.jpg",
     bio: "Leads defensive IQ sessions and mindset coaching.",
   },
+  {
+    name: "Joselu Mato",
+    role: "Real Madrid Striker",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Joselu_2023.jpg/256px-Joselu_2023.jpg",
+    bio: "Specializes in finishing techniques and striker positioning.",
+  },
+  {
+    name: "Kusi Asare",
+    role: "Professional Midfielder",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/256px-No_image_available.svg.png",
+    bio: "Focuses on tactical awareness and game intelligence.",
+  },
+  {
+    name: "Warren Ngana",
+    role: "Elite Performance Coach",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/256px-No_image_available.svg.png",
+    bio: "Mentors players on physical conditioning and mental strength.",
+  },
 ];
 
 export default function EliteCoachesSection() {

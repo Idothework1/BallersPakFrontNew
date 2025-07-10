@@ -38,7 +38,7 @@ export default function AboutPage() {
               </p>
               
               <p className="text-gray-300 leading-relaxed">
-                Through partnerships with elite athletes like <span className="text-green-400">Brahim Díaz</span>, <span className="text-green-400">Luka Modrić</span>, and others competing in the UEFA Champions League, we offer more than drills — we offer a path.
+                Through partnerships with elite athletes like <span className="text-green-400">Brahim Díaz</span>, <span className="text-green-400">Luka Modrić</span>, <span className="text-green-400">Raphaël Varane</span>, <span className="text-green-400">Joselu Mato</span>, and <span className="text-green-400">Warren Ngana</span> competing in the UEFA Champions League, we offer more than drills — we offer a path.
               </p>
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function AboutPage() {
             </h3>
             <div className="w-16 h-1 bg-green-500 mx-auto mb-4 md:mb-6"></div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
               <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
                 <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <span className="text-sm">⚽</span>
@@ -91,6 +91,42 @@ export default function AboutPage() {
                 <h4 className="text-sm md:text-base font-semibold text-white mb-1">Luka Modrić</h4>
                 <p className="text-green-400 text-xs">Real Madrid</p>
                 <p className="text-gray-400 text-xs">Central Midfielder</p>
+              </div>
+
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-sm">⚽</span>
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Raphaël Varane</h4>
+                <p className="text-green-400 text-xs">Manchester United</p>
+                <p className="text-gray-400 text-xs">Defender</p>
+              </div>
+
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-sm">⚽</span>
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Joselu Mato</h4>
+                <p className="text-green-400 text-xs">Real Madrid</p>
+                <p className="text-gray-400 text-xs">Striker</p>
+              </div>
+
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-sm">⚽</span>
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Kusi Asare</h4>
+                <p className="text-green-400 text-xs">Professional</p>
+                <p className="text-gray-400 text-xs">Midfielder</p>
+              </div>
+
+              <div className="text-center p-3 md:p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <span className="text-sm">⚽</span>
+                </div>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Warren Ngana</h4>
+                <p className="text-green-400 text-xs">Elite Coach</p>
+                <p className="text-gray-400 text-xs">Performance Coach</p>
               </div>
             </div>
           </div>
