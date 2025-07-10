@@ -29,7 +29,7 @@ export default function ClientSection() {
       id="clients"
       className="text-center mx-auto max-w-[80rem] px-4 md:px-6 lg:px-8 mt-12 md:mt-16 lg:mt-24"
     >
-      <div className="pt-4 md:pt-6 pb-10 md:pb-14">
+      <div className="pt-4 md:pt-6 pb-2 md:pb-1">
         <div className="mx-auto max-w-screen-xl px-2 md:px-4 lg:px-8">
           <h2 className="text-center text-lg md:text-xl font-semibold text-gray-600 mb-4 md:mb-6">
             TRUSTED BY TEAMS FROM AROUND THE WORLD
@@ -43,9 +43,9 @@ export default function ClientSection() {
                     key={`${club.id}-${index}`}
                     src={club.src}
                     alt={`${club.id} logo`}
-                    width={100}
-                    height={100}
-                    className="h-[100px] w-auto px-4 object-contain"
+                    width={110}
+                    height={110}
+                    className="h-[110px] w-auto px-2 object-contain"
                   />
                 ))}
               </Marquee>

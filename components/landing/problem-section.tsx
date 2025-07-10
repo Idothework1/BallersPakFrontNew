@@ -1,6 +1,6 @@
 export default function ProblemSection() {
   return (
-    <section id="problem" className="relative mx-auto max-w-[80rem] px-6 md:px-8 py-20">
+    <section id="problem" className="relative mx-auto max-w-[80rem] px-6 md:px-8 pb-20">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 via-transparent to-red-800/5 rounded-3xl"></div>
       

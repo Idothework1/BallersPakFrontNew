@@ -182,15 +182,9 @@ export function SiteHeader() {
           )}
         >
           <div className="container flex h-[3.5rem] items-center justify-between">
-            <Link className="text-md flex items-center" href="/">
-              <Image
-                src="/Logo.svg"
-                alt="BallersPak logo"
-                width={112}
-                height={112}
-                className="h-28 w-auto mt-14"
-              />
-            </Link>
+            <div className="text-md flex items-center">
+              {/* Hide logo when mobile menu is open */}
+            </div>
 
             <button
               className="ml-6 md:hidden"
@@ -217,11 +211,46 @@ export function SiteHeader() {
                     hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
                   }`}
                   href={item.href}
+                  onClick={() => setHamburgerMenuIsOpen(false)}
                 >
                   {item.label}
                 </Link>
               </motion.li>
             ))}
+            
+            {/* Mobile Auth Buttons */}
+            <motion.li
+              variants={mobileLinkVar}
+              className="border-grey-dark pl-6 py-0.5 border-b md:border-none"
+            >
+              <Link
+                className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
+                  hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
+                }`}
+                href="/login"
+                onClick={() => setHamburgerMenuIsOpen(false)}
+              >
+                Log in
+              </Link>
+            </motion.li>
+            
+            <motion.li
+              variants={mobileLinkVar}
+              className="border-grey-dark pl-6 py-0.5 md:border-none"
+            >
+              <Link
+                className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
+                  hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
+                }`}
+                href="/signup"
+                onClick={(e) => {
+                  setHamburgerMenuIsOpen(false);
+                  handleSignUpClick(e);
+                }}
+              >
+                Sign up
+              </Link>
+            </motion.li>
           </motion.ul>
         </motion.nav>
       </AnimatePresence>
