@@ -8,7 +8,7 @@ export default function SolutionSection() {
         {/* Main heading with better typography */}
         <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
           Introducing the 
-          <span className="block bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mt-4">
             &ldquo;Pro-Level Training System&rdquo;
           </span>
         </h2>
@@ -20,81 +20,99 @@ export default function SolutionSection() {
           </h3>
         </div>
 
-                 {/* Features grid */}
-         <div className="mx-auto max-w-6xl">
-           {/* Top 3 cards */}
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-             {[
-               {
-                 title: "Skill Mastery Tracks",
-                 desc: "Drills used by UEFA-level players, adapted for any environment"
-               },
-               {
-                 title: "Tactical IQ Sessions", 
-                 desc: "Learn how the best read the game with real match breakdowns"
-               },
-               {
-                 title: "Mindset Mentorship",
-                 desc: "Pro psychology to keep you focused, motivated, and mentally strong"
-               },
-             ].map((item, index) => (
-               <div key={item.title} className="relative group bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/50 rounded-2xl p-6 hover:scale-105 hover:shadow-2xl hover:border-green-500/50 transition-all duration-300">
-                 {/* Title */}
-                 <h4 className="text-xl font-bold text-green-400 mb-3 group-hover:text-white transition-colors duration-300">
-                   {item.title}
-                 </h4>
-                 
-                 {/* Description */}
-                 <p className="text-gray-400 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
-                   {item.desc}
-                 </p>
-                 
-                 {/* Hover effect border */}
-                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"></div>
-               </div>
-             ))}
-           </div>
-           
-           {/* Bottom 2 cards - centered */}
-           <div className="flex justify-center">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
-               {[
-                 {
-                   title: "Direct Feedback from Pros",
-                   desc: "Submit your training videos and get actionable critiques"
-                 },
-                 {
-                   title: "Career Path Guidance",
-                   desc: "Learn how to get noticed, craft a highlight reel, and pursue club trials"
-                 },
-               ].map((item, index) => (
-                 <div key={item.title} className="relative group bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/50 rounded-2xl p-6 hover:scale-105 hover:shadow-2xl hover:border-green-500/50 transition-all duration-300">
-              {/* Title */}
-              <h4 className="text-xl font-bold text-green-400 mb-3 group-hover:text-white transition-colors duration-300">
-                {item.title}
-              </h4>
-              
-              {/* Description */}
-              <p className="text-gray-400 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
-                {item.desc}
-              </p>
-              
-              {/* Hover effect border */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"></div>
+        {/* Features grid */}
+        <div className="mx-auto max-w-6xl">
+          {/* Top 3 cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {[
+              {
+                title: "Skill Mastery Tracks",
+                desc: "Drills used by UEFA-level players, adapted for any environment"
+              },
+              {
+                title: "Tactical IQ Sessions", 
+                desc: "Learn how the best read the game with real match breakdowns"
+              },
+              {
+                title: "Mindset Mentorship",
+                desc: "Pro psychology to keep you focused, motivated, and mentally strong"
+              },
+            ].map((item, index) => (
+              <div key={item.title} className="relative group bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/50 rounded-2xl p-6 hover:scale-105 hover:shadow-2xl hover:border-green-500/50 transition-all duration-300">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    {/* Title */}
+                    <h4 className="text-xl font-bold text-green-400 mb-3 group-hover:text-white transition-colors duration-300">
+                      {item.title}
+                    </h4>
+                    
+                    {/* Description */}
+                    <p className="text-gray-400 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Hover effect border */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"></div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Bottom 2 cards - centered */}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+              {[
+                {
+                  title: "Direct Feedback from Pros",
+                  desc: "Submit your training videos and get actionable critiques"
+                },
+                {
+                  title: "Career Path Guidance",
+                  desc: "Learn how to get noticed, craft a highlight reel, and pursue club trials"
+                },
+              ].map((item, index) => (
+                <div key={item.title} className="relative group bg-gradient-to-br from-gray-800/40 to-gray-900/40 border border-gray-700/50 rounded-2xl p-6 hover:scale-105 hover:shadow-2xl hover:border-green-500/50 transition-all duration-300">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      {/* Title */}
+                      <h4 className="text-xl font-bold text-green-400 mb-3 group-hover:text-white transition-colors duration-300">
+                        {item.title}
+                      </h4>
+                      
+                      {/* Description */}
+                      <p className="text-gray-400 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Hover effect border */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"></div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+        </div>
+        
+        {/* Call to action hint */}
+        <div className="mt-16 text-center">
+          <p className="text-gray-400 text-lg">
+            Ready to transform your game? 
+            <span className="text-white font-semibold ml-2">Join thousands of players already training like pros.</span>
+          </p>
         </div>
       </div>
-    </div>
-      
-    {/* Call to action hint */}
-    <div className="mt-16 text-center">
-      <p className="text-gray-400 text-lg">
-        Ready to transform your game? 
-        <span className="text-white font-semibold ml-2">Join thousands of players already training like pros.</span>
-      </p>
-    </div>
-  </div>
     </section>
   );
 } 

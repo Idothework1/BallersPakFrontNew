@@ -6,9 +6,9 @@ export default function ProblemSection() {
       
       <div className="relative text-center">
         {/* Main heading with better typography */}
-        <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+        <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-relaxed">
           Why Most Talented Players in Pakistan 
-          <span className="block text-red-400">Never Go Pro</span>
+          <span className="block text-red-400 mt-2">Never Go Pro</span>
         </h2>
         
         {/* Subheading with emphasis */}

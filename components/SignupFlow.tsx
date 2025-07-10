@@ -20,6 +20,8 @@ export default function SignupFlow() {
     | "location"
     | "contact"
     | "goal"
+    | "position"
+    | "position-secondary"
     | "more"
     | "done";
   const [step, setStep] = useState<Step>("intro");
@@ -37,7 +39,10 @@ export default function SignupFlow() {
   const [location, setLocation] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState("");
+  const [primaryPosition, setPrimaryPosition] = useState("");
+  const [secondaryPosition, setSecondaryPosition] = useState("");
+  const [customSecondaryPosition, setCustomSecondaryPosition] = useState("");
+  const [position, setPosition] = useState(""); // Keep for backward compatibility
   const [goal, setGoal] = useState("");
   const [whyJoin, setWhyJoin] = useState("");
 
@@ -49,9 +54,43 @@ export default function SignupFlow() {
 
   const handleConfirmYes = () => setShowConfirm(false);
 
+  // Phone number validation for Pakistani numbers
+  const validatePhoneNumber = (number: string) => {
+    // Remove any spaces or dashes
+    const cleanNumber = number.replace(/[\s-]/g, '');
+    // Pakistani mobile numbers: 10 digits starting with 3
+    const pakistaniMobilePattern = /^3\d{9}$/;
+    return pakistaniMobilePattern.test(cleanNumber);
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove non-digits
+    const numbers = value.replace(/\D/g, '');
+    // Limit to 10 digits for Pakistani numbers
+    const limited = numbers.slice(0, 10);
+    // Format as 3XX-XXXXXXX
+    if (limited.length >= 4) {
+      return limited.slice(0, 3) + '-' + limited.slice(3);
+    }
+    return limited;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setPhone(formatted);
+  };
+
   // Send data to backend and then redirect when user completes the flow
   useEffect(() => {
     if (step === "done") {
+      // Get the final secondary position value
+      const finalSecondaryPosition = secondaryPosition === "Other" ? customSecondaryPosition : secondaryPosition;
+      
+      // Combine primary and secondary positions for the legacy position field
+      const combinedPosition = finalSecondaryPosition 
+        ? `${primaryPosition} (Secondary: ${finalSecondaryPosition})`
+        : primaryPosition;
+
       // Prepare payload in intuitive format
       const payload = {
         firstName,
@@ -64,8 +103,10 @@ export default function SignupFlow() {
         hasDisability,
         location,
         email,
-        phone,
-        position,
+        phone: "+92" + phone.replace(/\D/g, ''), // Clean phone number with Pakistan country code
+        position: combinedPosition,
+        primaryPosition,
+        secondaryPosition: finalSecondaryPosition,
         goal,
         whyJoin,
       } as const;
@@ -86,7 +127,7 @@ export default function SignupFlow() {
 
       return () => clearTimeout(timer);
     }
-  }, [step, router]);
+  }, [step, router, firstName, lastName, playedBefore, experienceLevel, playedClub, clubName, gender, hasDisability, location, email, phone, primaryPosition, secondaryPosition, customSecondaryPosition, goal, whyJoin]);
 
   return (
     <>
@@ -325,23 +366,114 @@ export default function SignupFlow() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium" htmlFor="phone">Phone Number</label>
-              <input
-                id="phone"
-                type="tel"
-                placeholder="03XX-XXXXXXX"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="border bg-transparent px-3 py-2 rounded-md w-full"
-              />
+              <div className="flex gap-2">
+                <div className="border border-gray-500 bg-gray-100 text-black px-3 py-2 rounded-md flex items-center text-sm font-medium">
+                  🇵🇰 +92
+                </div>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="3XX-XXXXXXX"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  className="border bg-transparent px-3 py-2 rounded-md flex-1"
+                  maxLength={12} // 3XX-XXXXXXX format
+                />
+              </div>
+              {phone && !validatePhoneNumber(phone.replace(/\D/g, '')) && (
+                <p className="text-red-400 text-xs mt-1">
+                  Please enter a valid Pakistani mobile number (10 digits starting with 3)
+                </p>
+              )}
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setStep("more")} disabled={!email || !phone}>Continue</Button>
+            <Button 
+              onClick={() => setStep("position")} 
+              disabled={!email || !phone || !validatePhoneNumber(phone.replace(/\D/g, ''))}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      ) : step === "position" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">Which position do you currently play or want to master?</h2>
+          <div className="flex flex-col gap-3">
+            {[
+              "Goalkeeper",
+              "Defender (Center Back / Full Back)",
+              "Midfielder (Defensive / Central / Attacking)",
+              "Forward (Winger / Striker)"
+            ].map((pos) => (
+              <Button
+                key={pos}
+                variant={primaryPosition === pos ? undefined : "secondary"}
+                onClick={() => setPrimaryPosition(pos)}
+                className="text-left justify-start h-auto py-3 px-4"
+              >
+                {pos}
+              </Button>
+            ))}
+          </div>
+          <div className="flex justify-end">
+            <Button 
+              onClick={() => setStep("position-secondary")} 
+              disabled={!primaryPosition}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      ) : step === "position-secondary" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">Do you play any other position or have a specific play style?</h2>
+          <p className="text-gray-400 text-center text-sm">This is optional</p>
+          <div className="flex flex-col gap-3">
+            {[
+              "I'm a versatile player",
+              "I'm still exploring my best position",
+              "Other"
+            ].map((option) => (
+              <Button
+                key={option}
+                variant={secondaryPosition === option ? undefined : "secondary"}
+                onClick={() => {
+                  if (option === "Other") {
+                    setSecondaryPosition("Other");
+                    setCustomSecondaryPosition("");
+                  } else {
+                    setSecondaryPosition(option);
+                    setCustomSecondaryPosition("");
+                  }
+                }}
+                className="text-left justify-start h-auto py-3 px-4"
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+          {secondaryPosition === "Other" && (
+            <input
+              type="text"
+              placeholder="Please specify..."
+              value={customSecondaryPosition}
+              onChange={(e) => setCustomSecondaryPosition(e.target.value)}
+              className="border bg-transparent px-3 py-2 rounded-md w-full mt-2"
+            />
+          )}
+          <div className="flex justify-end gap-4">
+            <Button variant="secondary" onClick={() => setStep("more")}>
+              Skip
+            </Button>
+            <Button onClick={() => setStep("more")}>
+              Continue
+            </Button>
           </div>
         </div>
       ) : step === "goal" ? (
         <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
-          <h2 className="text-xl font-semibold text-center">What’s your biggest goal in football?</h2>
+          <h2 className="text-xl font-semibold text-center">What&apos;s your biggest goal in football?</h2>
           <input
             type="text"
             placeholder="Your goal"
@@ -355,28 +487,16 @@ export default function SignupFlow() {
         </div>
       ) : step === "more" ? (
         <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
-          <h2 className="text-xl font-semibold text-center">Tell us a bit more (optional)</h2>
+          <h2 className="text-xl font-semibold text-center">Almost done!</h2>
           <div className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium" htmlFor="position">What position do you play?</label>
-              <input
-                id="position"
-                type="text"
-                placeholder="e.g. Striker"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-                className="border bg-transparent px-3 py-2 rounded-md w-full"
-              />
-            </div>
-            <div>
               <label className="mb-1 block text-sm font-medium" htmlFor="why">Why do you want to join this program?</label>
-              <input
+              <textarea
                 id="why"
-                type="text"
-                placeholder="Optional"
+                placeholder="Optional - Tell us what motivates you..."
                 value={whyJoin}
                 onChange={(e) => setWhyJoin(e.target.value)}
-                className="border bg-transparent px-3 py-2 rounded-md w-full"
+                className="border bg-transparent px-3 py-2 rounded-md w-full h-20 resize-none"
               />
             </div>
           </div>
@@ -389,7 +509,7 @@ export default function SignupFlow() {
         <div className="mx-auto flex w-full h-full flex-col items-center justify-center gap-6 sm:w-[400px] text-center">
           <h1 className="text-3xl font-bold">You&apos;re all set!</h1>
           <p className="text-gray-400">Thank you for signing up. We&apos;re redirecting you to the homepage…</p>
-          <p className="text-gray-500 italic max-w-xs">“We’ll review your form and reply within 24–48 hours with next steps.”</p>
+          <p className="text-gray-500 italic max-w-xs">&ldquo;We&apos;ll review your form and reply within 24–48 hours with next steps.&rdquo;</p>
         </div>
       )}
       {/* Auto redirect on done */}

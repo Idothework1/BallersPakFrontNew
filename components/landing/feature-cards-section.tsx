@@ -23,7 +23,7 @@ export default function FeatureCardsSection() {
 
   return (
     <section className="mx-auto max-w-[80rem] px-6 md:px-8 py-20">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cards.map((card) => (
           <CardContainer key={card.title} containerClassName="py-0">
             <CardBody className="rounded-xl bg-gray-800/30 px-16 pb-16 pt-0 border border-gray-700 text-center">
@@ -36,10 +36,11 @@ export default function FeatureCardsSection() {
                   className="object-contain"
                 />
               </CardItem>
-              <CardItem translateZ={50} className="text-3xl font-bold text-white mb-4 text-center w-full">
+              
+              <CardItem translateZ={50} className="text-3xl font-bold text-white mb-3 text-center w-full">
                 {card.title}
               </CardItem>
-              <CardItem translateZ={30} className="text-gray-400 text-sm">
+              <CardItem translateZ={30} className="text-gray-400 text-sm text-center">
                 {card.desc}
               </CardItem>
             </CardBody>
