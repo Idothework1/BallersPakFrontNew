@@ -20,7 +20,7 @@ import * as z from "zod";
 
 export const userAuthSchema = z.object({
   email: z.string().email(),
-  password: z.string().optional(),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 type FormData = z.infer<typeof userAuthSchema>;
 
@@ -31,6 +31,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     resolver: zodResolver(userAuthSchema),
     defaultValues: {
       email: "",
+      password: "",
     },
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -73,7 +74,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Email</FormLabel> */}
                   <FormControl>
                     <Input
                       id="email"
@@ -86,7 +86,26 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  {/* <FormDescription>This is your email address.</FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      id="password"
+                      placeholder="Password"
+                      type="password"
+                      autoComplete="current-password"
+                      disabled={isLoading || isGitHubLoading}
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -106,31 +125,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </div>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <button
-        type="button"
-        className={cn(buttonVariants({ variant: "outline" }))}
-        onClick={() => {
-          onSignInGithub();
-        }}
-        disabled={isLoading || isGitHubLoading}
-      >
-        {isGitHubLoading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <GitHubLogoIcon className="mr-2 h-4 w-4" />
-        )}{" "}
-        Github
-      </button>
     </div>
   );
 }

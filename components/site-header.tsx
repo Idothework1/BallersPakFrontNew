@@ -138,11 +138,20 @@ export function SiteHeader() {
             ))}
           </ul>
 
-          <div className="ml-auto flex h-full items-center">
+          <div className="ml-auto flex h-full items-center gap-3">
+            <Link
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "text-sm"
+              )}
+              href="/login"
+            >
+              Log in
+            </Link>
             <Link
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "mr-6 text-sm"
+                "text-sm"
               )}
               href="/signup"
               onClick={handleSignUpClick}
