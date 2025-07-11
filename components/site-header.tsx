@@ -20,6 +20,11 @@ const menuItem = [
     label: "Ambassador Program",
     href: "/ambassador",
   },
+  {
+    id: 3,
+    label: "Privacy Policy",
+    href: "/privacy-policy",
+  },
 ];
 
 export function SiteHeader() {
@@ -138,7 +143,7 @@ export function SiteHeader() {
             ))}
           </ul>
 
-          <div className="ml-auto flex h-full items-center gap-3">
+          <div className="ml-auto hidden md:flex h-full items-center gap-3">
             <Link
               className={cn(
                 buttonVariants({ variant: "outline" }),

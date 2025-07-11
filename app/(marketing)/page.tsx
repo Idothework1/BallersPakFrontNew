@@ -9,6 +9,7 @@ import RoadmapSection from "@/components/landing/roadmap-section";
 import PricingSection from "@/components/landing/pricing-section";
 import FAQSection from "@/components/landing/faq-section";
 import ClientSection from "@/components/landing/client-section";
+import NotSureSection from "@/components/landing/not-sure-section";
 import { SphereMask } from "@/components/magicui/sphere-mask";
 
 export default async function Page() {
@@ -26,6 +27,7 @@ export default async function Page() {
       <PricingSection />
       <CallToActionSection />
       <FAQSection />
+      <NotSureSection />
     </>
   );
 }

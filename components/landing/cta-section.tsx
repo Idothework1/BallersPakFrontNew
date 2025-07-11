@@ -174,7 +174,7 @@ export default function CallToActionSection() {
               </div>
               <div className="z-10 mt-4 flex flex-col items-center text-center text-primary">
                 <h1 className="text-3xl font-bold lg:text-4xl">
-                  🚨 Limited Spots: Pro Feedback Slots Close in 72 Hours
+                  🚨 Limited Access: Mentorship Spots Filling Fast
                 </h1>
                 <p className="mt-2">
                   If you&apos;re serious about becoming a pro, now’s your moment.
