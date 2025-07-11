@@ -52,7 +52,7 @@ export default function HeroSection() {
         </h1>
 
         <h2 className="mb-6 text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:300ms] text-balance">
-          Train Like a UEFA Champion — From Your Home in {" "}
+          Train With Champions League Footballers — From Your Home in {" "}
           <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block">Pakistan</AnimatedGradientText>
         </h2>
         <p className="mb-4 text-lg tracking-tight text-gray-400 md:text-xl text-balance translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
