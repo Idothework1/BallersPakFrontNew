@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const coaches = [
   {
-    name: "Luka Modrić",
+    name: "Luka Modric",
     role: "Real Madrid & Croatia Legend",
     img: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Luka_Modrić_2018.jpg",
     bio: "Ballon d'Or winner mentoring our midfield mastery track.",

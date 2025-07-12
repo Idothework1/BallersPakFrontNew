@@ -21,8 +21,8 @@ export default async function Page() {
       <ProblemSection />
       <SolutionSection />
       <EliteCoachesSection />
-      <FeatureCardsSection />
       <HowItWorksSection />
+      <FeatureCardsSection />
       <RoadmapSection />
       <PricingSection />
       <CallToActionSection />

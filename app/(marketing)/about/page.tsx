@@ -38,7 +38,7 @@ export default function AboutPage() {
               </p>
               
               <p className="text-gray-300 leading-relaxed">
-                Through partnerships with elite athletes like <span className="text-green-400">Brahim Díaz</span>, <span className="text-green-400">Luka Modrić</span>, <span className="text-green-400">Raphaël Varane</span>, <span className="text-green-400">Joselu Mato</span>, and <span className="text-green-400">Warren Ngana</span> competing in the UEFA Champions League, we offer more than drills — we offer a path.
+                Through partnerships with elite athletes like <span className="text-green-400">Brahim Díaz</span>, <span className="text-green-400">Luka Modric</span>, <span className="text-green-400">Raphaël Varane</span>, <span className="text-green-400">Joselu Mato</span>, and <span className="text-green-400">Warren Ngana</span> competing in the UEFA Champions League, we offer more than drills — we offer a path.
               </p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
                 <div className="w-10 h-10 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
                   <span className="text-sm">⚽</span>
                 </div>
-                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Luka Modrić</h4>
+                <h4 className="text-sm md:text-base font-semibold text-white mb-1">Luka Modric</h4>
                 <p className="text-green-400 text-xs">Real Madrid</p>
                 <p className="text-gray-400 text-xs">Central Midfielder</p>
               </div>

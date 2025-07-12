@@ -10,7 +10,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
-import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { XIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
@@ -59,7 +59,7 @@ export default function HeroSection() {
           </AnimatedGradientText>
           ,
           <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block font-semibold mx-1">
-            Luka Modrić
+            Luka Modric
           </AnimatedGradientText>
           &
           <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="inline-block font-semibold mx-1">
@@ -74,7 +74,7 @@ export default function HeroSection() {
           className="group translate-y-[-1rem] animate-fade-in gap-1 rounded-lg text-white dark:text-black opacity-0 ease-in-out [--animation-delay:600ms] hover:bg-emerald-500 dark:hover:bg-emerald-600"
         >
           <PlayIcon className="mr-1 size-4 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-          <span className="transition-colors duration-300 group-hover:text-white">Join the Club to Watch Video</span>
+          <span className="transition-colors duration-300 group-hover:text-white">Preview the Ballers Pak Video</span>
           <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
         </Button>
 
@@ -122,7 +122,6 @@ export default function HeroSection() {
           style={{ filter: 'drop-shadow(0 0 60px rgba(255,255,255,0.4))', maskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)', WebkitMaskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)' }}
         />
       </section>
-      <HeroVideoPreviewButton />
 
       {/* Video Modal */}
       <AnimatePresence>
