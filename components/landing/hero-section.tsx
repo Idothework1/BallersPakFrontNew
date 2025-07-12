@@ -5,26 +5,23 @@ import TextShimmer from "@/components/magicui/text-shimmer";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import HeroVideoAutoPlay from "@/components/HeroVideoAutoPlay";
 import HeroVideoPreviewButton from "@/components/HeroVideoPreviewButton";
+import { AnimatePresence, motion } from "framer-motion";
+import { XIcon, PlayIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function HeroSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   const handleJoinClick = () => {
-    // Scroll to pricing section smoothly
-    const pricingSection = document.getElementById("pricing");
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ 
-        behavior: "smooth",
-        block: "start"
-      });
-    }
+    setShowVideoModal(true);
   };
 
   return (
@@ -76,7 +73,8 @@ export default function HeroSection() {
           onClick={handleJoinClick}
           className="group translate-y-[-1rem] animate-fade-in gap-1 rounded-lg text-white dark:text-black opacity-0 ease-in-out [--animation-delay:600ms] hover:bg-emerald-500 dark:hover:bg-emerald-600"
         >
-          <span className="transition-colors duration-300 group-hover:text-white">Join the Club </span>
+          <PlayIcon className="mr-1 size-4 transition-transform duration-300 ease-in-out group-hover:scale-110" />
+          <span className="transition-colors duration-300 group-hover:text-white">Join the Club to Watch Video</span>
           <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
         </Button>
 
@@ -115,14 +113,52 @@ export default function HeroSection() {
         </div>
 
         {/* Background SVG with white glow */}
-        <img
+        <Image
           src="/Background.svg"
-          aria-hidden="true"
+          alt=""
+          width={1920}
+          height={1080}
           className="pointer-events-none absolute left-1/2 -top-24 -translate-x-1/2 w-[110%] max-w-none opacity-20 -z-10"
           style={{ filter: 'drop-shadow(0 0 60px rgba(255,255,255,0.4))', maskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)', WebkitMaskImage: 'radial-gradient(70% 90% at center, white 25%, transparent 100%)' }}
         />
       </section>
       <HeroVideoPreviewButton />
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setShowVideoModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-4xl aspect-video"
+            >
+              <video
+                src="/Video.mp4"
+                controls
+                autoPlay
+                className="h-full w-full rounded-lg object-contain"
+              />
+
+              <button
+                className="absolute -right-3 -top-3 rounded-full bg-white p-1 text-black shadow"
+                onClick={() => setShowVideoModal(false)}
+              >
+                <XIcon className="h-4 w-4" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -82,7 +82,7 @@ const Particles: React.FC<ParticlesProps> = ({
     magnetism: number;
   };
 
-  const resizeCanvas = () => {
+  const resizeCanvas = useCallback(() => {
     if (canvasContainerRef.current && canvasRef.current && context.current) {
       circles.current.length = 0;
       canvasSize.current.w = canvasContainerRef.current.offsetWidth;
@@ -93,9 +93,9 @@ const Particles: React.FC<ParticlesProps> = ({
       canvasRef.current.style.height = `${canvasSize.current.h}px`;
       context.current.scale(dpr, dpr);
     }
-  };
+  }, [dpr]);
 
-  const clearContext = () => {
+  const clearContext = useCallback(() => {
     if (context.current) {
       context.current.clearRect(
         0,
@@ -104,9 +104,9 @@ const Particles: React.FC<ParticlesProps> = ({
         canvasSize.current.h
       );
     }
-  };
+  }, []);
 
-  const circleParams = (): Circle => {
+  const circleParams = useCallback((): Circle => {
     const x = Math.floor(Math.random() * canvasSize.current.w);
     const y = Math.floor(Math.random() * canvasSize.current.h);
     const translateX = 0;
@@ -129,11 +129,11 @@ const Particles: React.FC<ParticlesProps> = ({
       dy,
       magnetism,
     };
-  };
+  }, [size]);
 
   const rgb = hexToRgb(color);
 
-  const drawCircle = (circle: Circle, update = false) => {
+  const drawCircle = useCallback((circle: Circle, update = false) => {
     if (context.current) {
       const { x, y, translateX, translateY, size, alpha } = circle;
       context.current.translate(translateX, translateY);
@@ -147,16 +147,16 @@ const Particles: React.FC<ParticlesProps> = ({
         circles.current.push(circle);
       }
     }
-  };
+  }, [rgb, dpr]);
 
-  const drawParticles = () => {
+  const drawParticles = useCallback(() => {
     clearContext();
     const particleCount = quantity;
     for (let i = 0; i < particleCount; i++) {
       const circle = circleParams();
       drawCircle(circle);
     }
-  };
+  }, [quantity, circleParams, drawCircle, clearContext]);
 
   const remapValue = (
     value: number,
@@ -238,7 +238,7 @@ const Particles: React.FC<ParticlesProps> = ({
       }
     });
     animationFrameRef.current = window.requestAnimationFrame(animate);
-  }, [vx, vy, staticity, ease, circleParams, drawCircle]);
+  }, [vx, vy, staticity, ease, circleParams, drawCircle, clearContext]);
 
   useEffect(() => {
     if (canvasRef.current) {

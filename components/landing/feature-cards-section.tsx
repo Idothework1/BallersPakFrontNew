@@ -22,7 +22,7 @@ export default function FeatureCardsSection() {
   ];
 
   return (
-    <section className="mx-auto max-w-[80rem] px-6 md:px-8 py-20">
+    <section id="programs" className="mx-auto max-w-[80rem] px-6 md:px-8 py-20">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cards.map((card) => (
           <CardContainer key={card.title} containerClassName="py-0">

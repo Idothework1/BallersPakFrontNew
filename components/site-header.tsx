@@ -20,11 +20,6 @@ const menuItem = [
     label: "Ambassador Program",
     href: "/ambassador",
   },
-  {
-    id: 3,
-    label: "Privacy Policy",
-    href: "/privacy-policy",
-  },
 ];
 
 export function SiteHeader() {
