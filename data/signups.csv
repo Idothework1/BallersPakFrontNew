@@ -1,5 +1,10 @@
-timestamp,firstName,lastName,playedBefore,experienceLevel,playedClub,clubName,gender,hasDisability,location,email,phone,position,goal,whyJoin
-"2025-07-08T10:02:43.664Z","zx","zx","true","Beginner","false","","Male","false","zx","zx","1212121","as","zx","as"
-"2025-07-08T10:07:12.297Z","first","last","false","Beginner","","","Male","false","city","email","12345","striker","ball","ads"
-"2025-07-08T14:41:16.912Z","jghnu67","hgju7","true","Intermediate","true","jghmuih","Male","false","jmhkui6trfdd","hgngu@example.com","12306978493","stricker","7u7u7ijmhn","sumn"
-"2025-07-10T15:09:19.710Z","sadasd","sdad","true","Beginner","true","asdasd","Male","false","asdasd","sdasdas","+923234242242","Defender (Center Back / Full Back) (Secondary: sddfdfD)","sdads","Test Test Test Test Test"
+timestamp,planType,paymentStatus,firstName,lastName,fullName,age,playedBefore,experienceLevel,playedClub,clubName,gender,hasDisability,location,email,phone,position,goal,whyJoin,whyJoinReason,birthday
+"2025-07-08T10:07:12.297Z","free","n/a","first","last","","","false","Beginner","","","Male","false","city","email","12345","striker","ball","ads","",""
+"2025-07-08T14:41:16.912Z","free","n/a","jghnu67","hgju7","","","true","Intermediate","true","jghmuih","Male","false","jmhkui6trfdd","hgngu@example.com","12306978493","stricker","7u7u7ijmhn","sumn","",""
+"2025-07-10T15:09:19.710Z","free","n/a","sadasd","sdad","","","true","Beginner","true","asdasd","Male","false","asdasd","sdasdas","+923234242242","Defender (Center Back / Full Back) (Secondary: sddfdfD)","sdads","Test Test Test Test Test","",""
+"2025-07-14T03:53:59.203Z","free","n/a","sdsdfsdf","rere","","","false","Beginner","","","Male","false","sdfsdf","sdfsdfsd","+923214234234","Goalkeeper (Secondary: I'm still exploring my best position)","waeawe","asdasdasdweadsdasdasd","",""
+"2025-07-14T04:01:30.752Z","free","n/a","adas","asdas","","","false","Beginner","","","Male","false","asdasda","asdasd","+923123123123","Midfielder (Defensive / Central / Attacking) (Secondary: I'm a versatile player)","awdwa","asdasd","",""
+"2025-07-14T04:24:57.729Z","elite","completed","Elite Player","","Elite Player","14","","academy","","","","","","asdadasd@sdasd.com","","goalkeeper","Pro-level training","","","2010-12-14"
+"2025-07-14T04:25:40.064Z","elite","completed","Elite Player 2","","Elite Player 2","20","","academy","","","","","","test@test.com","","midfielder","Pro-level training","","","2005-03-02"
+"2025-07-14T04:29:22.921Z","pro","completed","Pro Player","","Pro Player","0","","semi-pro","","","","","","email@test.com","","defender","Pro-level training","sfsdfsdfsefsefs","sfsdfsdfsefsefs","2025-07-07"
+"2025-07-14T04:35:25.932Z","elite","completed","Elite Player 3","","Elite Player 3","23","","academy","","","","","","mail@mail.com","","midfielder","Pro-level training","","","2002-02-01""2025-07-14T06:22:34.260Z","free","n/a","John","Doe","","","true","Intermediate","true","Club","Female","true","City","test@mail.com","+923234556556","Forward (Winger / Striker) (Secondary: I'm still exploring my best position)","Goal","Sumn cool","","2003-03-03"

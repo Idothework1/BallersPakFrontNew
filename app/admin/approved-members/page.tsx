@@ -31,42 +31,36 @@ async function getSignups() {
     headers.forEach((header, idx) => {
       obj[header] = String(values[idx + 1] ?? "");
     });
-    
-    // Add status field if not present (for existing free players)
-    if (!obj.status && obj.planType === "free") {
-      obj.status = "waitlisted";
-    }
-    
     return obj;
   });
 }
 
-export default async function AdminPage() {
+export default async function ApprovedMembersPage() {
   const allSignups = await getSignups();
   
-  // Filter for waitlisted players (previously free players)
-  const waitlistedSignups = allSignups.filter((player) => {
+  // Filter for approved sign up members (not premium)
+  const approvedMembers = allSignups.filter((player) => {
     const planType = player.planType || "free";
-    const status = player.status || "waitlisted";
-    return planType === "free" && (status === "waitlisted" || status === "pending");
+    const status = player.status || "";
+    return planType === "free" && status === "approved";
   });
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Sign Ups / Waitlisted Players</h1>
+        <h1 className="text-3xl font-bold text-white">Approved Sign Up Members</h1>
         <div className="text-sm text-gray-400">
-          Manage player applications and approvals
+          Non-premium members who have been approved
         </div>
       </div>
       
-      {waitlistedSignups.length === 0 ? (
+      {approvedMembers.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-400 text-lg mb-4">No pending applications.</p>
-          <p className="text-gray-500">Player sign-ups and applications will appear here for review and approval.</p>
+          <p className="text-gray-400 text-lg mb-4">No approved members yet.</p>
+          <p className="text-gray-500">Members who are approved from the waitlist will appear here.</p>
         </div>
       ) : (
-        <AdminTable data={waitlistedSignups} showActions={true} />
+        <AdminTable data={approvedMembers} showActions={false} />
       )}
     </div>
   );

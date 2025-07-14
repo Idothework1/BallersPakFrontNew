@@ -13,6 +13,7 @@ export default function SignupFlow() {
   type Step =
     | "intro"
     | "name"
+    | "birthday"
     | "played"
     | "experience"
     | "gender"
@@ -23,6 +24,7 @@ export default function SignupFlow() {
     | "position"
     | "position-secondary"
     | "more"
+    | "privacy"
     | "done";
   const [step, setStep] = useState<Step>("intro");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -30,6 +32,7 @@ export default function SignupFlow() {
   // Collected data (could be sent to backend later)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [birthday, setBirthday] = useState("");
   const [playedBefore, setPlayedBefore] = useState<boolean | null>(null);
   const [experienceLevel, setExperienceLevel] = useState("Beginner");
   const [playedClub, setPlayedClub] = useState<boolean | null>(null);
@@ -45,6 +48,8 @@ export default function SignupFlow() {
   const [position, setPosition] = useState(""); // Keep for backward compatibility
   const [goal, setGoal] = useState("");
   const [whyJoin, setWhyJoin] = useState("");
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
 
   const router = useRouter();
 
@@ -95,6 +100,7 @@ export default function SignupFlow() {
       const payload = {
         firstName,
         lastName,
+        birthday,
         playedBefore,
         experienceLevel,
         playedClub,
@@ -127,7 +133,7 @@ export default function SignupFlow() {
 
       return () => clearTimeout(timer);
     }
-  }, [step, router, firstName, lastName, playedBefore, experienceLevel, playedClub, clubName, gender, hasDisability, location, email, phone, primaryPosition, secondaryPosition, customSecondaryPosition, goal, whyJoin]);
+  }, [step, router, firstName, lastName, birthday, playedBefore, experienceLevel, playedClub, clubName, gender, hasDisability, location, email, phone, primaryPosition, secondaryPosition, customSecondaryPosition, goal, whyJoin]);
 
   return (
     <>
@@ -196,8 +202,44 @@ export default function SignupFlow() {
           </div>
           <div className="flex justify-end gap-4">
             <Button
-              onClick={() => setStep("played")}
+              onClick={() => setStep("birthday")}
               disabled={!firstName || !lastName}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      ) : step === "birthday" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">Your Birthday</h2>
+          <p className="text-gray-400 text-center text-sm">
+            This will be used as your profile password when you&apos;re approved as a member
+          </p>
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="birthday">
+                Date of Birth
+              </label>
+              <input
+                id="birthday"
+                type="date"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                className="border bg-transparent px-3 py-2 rounded-md w-full"
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 5)).toISOString().split('T')[0]}
+                min={new Date(new Date().setFullYear(new Date().getFullYear() - 50)).toISOString().split('T')[0]}
+              />
+              {birthday && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Remember this date - you&apos;ll use it to log in to your profile
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end gap-4">
+            <Button
+              onClick={() => setStep("played")}
+              disabled={!birthday}
             >
               Continue
             </Button>
@@ -501,7 +543,82 @@ export default function SignupFlow() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={() => setStep("done")}>Finish</Button>
+            <Button onClick={() => setStep("privacy")}>Continue</Button>
+          </div>
+        </div>
+      ) : step === "privacy" ? (
+        <div className="mx-auto flex w-full flex-col gap-6 sm:w-[400px]">
+          <h2 className="text-xl font-semibold text-center">Legal Agreements</h2>
+          <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl p-6 text-sm text-gray-300">
+            <p className="mb-4">
+              Before we can create your account, we need your agreement to our legal documents.
+            </p>
+            <p className="mb-4">
+              These documents explain our service terms, how we protect children&apos;s privacy, and what rights parents and guardians have regarding their child&apos;s data.
+            </p>
+            <p className="font-medium text-white">
+              Please read our{" "}
+              <Link 
+                href="/privacy-policy" 
+                target="_blank"
+                className="text-blue-300 hover:text-blue-200 underline font-semibold"
+              >
+                Parental Control & Privacy Policy
+              </Link>{" "}
+              and{" "}
+              <Link 
+                href="/terms" 
+                target="_blank"
+                className="text-blue-300 hover:text-blue-200 underline font-semibold"
+              >
+                Terms of Service
+              </Link>{" "}
+              carefully.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-4 border border-gray-600 rounded-lg">
+              <input
+                type="checkbox"
+                id="privacy-agreement"
+                checked={privacyAgreed}
+                onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label htmlFor="privacy-agreement" className="text-sm text-gray-300 leading-relaxed">
+                <span className="text-white font-medium">I agree</span> to the Parental Control & Privacy Policy. 
+                I understand how my data will be collected, used, and protected. If I am under 18, 
+                my parent or guardian has provided consent for me to use this platform.
+              </label>
+            </div>
+            
+            <div className="flex items-start gap-3 p-4 border border-gray-600 rounded-lg">
+              <input
+                type="checkbox"
+                id="terms-agreement"
+                checked={termsAgreed}
+                onChange={(e) => setTermsAgreed(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label htmlFor="terms-agreement" className="text-sm text-gray-300 leading-relaxed">
+                <span className="text-white font-medium">I agree</span> to the Terms of Service. 
+                I understand the rules of conduct, refund policies, liability limitations, and other terms governing the use of this platform.
+              </label>
+            </div>
+          </div>
+          
+          <div className="flex justify-between gap-4">
+            <Button variant="secondary" onClick={() => setStep("more")}>
+              Back
+            </Button>
+            <Button 
+              onClick={() => setStep("done")} 
+              disabled={!privacyAgreed || !termsAgreed}
+              className={!privacyAgreed || !termsAgreed ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              Complete Registration
+            </Button>
           </div>
         </div>
       ) : (
@@ -509,6 +626,15 @@ export default function SignupFlow() {
         <div className="mx-auto flex w-full h-full flex-col items-center justify-center gap-6 sm:w-[400px] text-center">
           <h1 className="text-3xl font-bold">You&apos;re all set!</h1>
           <p className="text-gray-400">Thank you for signing up. We&apos;re redirecting you to the homepage…</p>
+          
+          <div className="bg-blue-900/30 border border-blue-600/50 rounded-lg p-4 max-w-sm">
+            <h3 className="text-blue-300 font-semibold mb-2">📅 Remember Your Login</h3>
+            <p className="text-blue-200 text-sm">
+              Your <strong>birthday</strong> will be your password when you&apos;re approved as a member. 
+              Use your email + birthday to access your profile.
+            </p>
+          </div>
+          
           <p className="text-gray-500 italic max-w-xs">&ldquo;We&apos;ll review your form and reply within 24–48 hours with next steps.&rdquo;</p>
         </div>
       )}

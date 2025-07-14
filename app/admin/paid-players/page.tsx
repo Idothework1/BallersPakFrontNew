@@ -3,7 +3,7 @@ import path from "path";
 import ExcelJS from "exceljs";
 import nextDynamic from "next/dynamic";
 
-const AdminTable = nextDynamic(() => import("@/components/admin/AdminTable"), { ssr: false });
+const PaidPlayersTable = nextDynamic(() => import("@/components/admin/PaidPlayersTable"), { ssr: false });
 
 // Allow dynamic rendering so we read fresh data on each request
 export const dynamic = "force-dynamic";
@@ -31,42 +31,35 @@ async function getSignups() {
     headers.forEach((header, idx) => {
       obj[header] = String(values[idx + 1] ?? "");
     });
-    
-    // Add status field if not present (for existing free players)
-    if (!obj.status && obj.planType === "free") {
-      obj.status = "waitlisted";
-    }
-    
     return obj;
   });
 }
 
-export default async function AdminPage() {
+export default async function PaidPlayersPage() {
   const allSignups = await getSignups();
   
-  // Filter for waitlisted players (previously free players)
-  const waitlistedSignups = allSignups.filter((player) => {
+  // Filter for paid players only
+  const paidPlayers = allSignups.filter((player) => {
     const planType = player.planType || "free";
-    const status = player.status || "waitlisted";
-    return planType === "free" && (status === "waitlisted" || status === "pending");
+    return planType === "elite" || planType === "pro";
   });
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Sign Ups / Waitlisted Players</h1>
+        <h1 className="text-3xl font-bold text-white">Premium Members</h1>
         <div className="text-sm text-gray-400">
-          Manage player applications and approvals
+          Members with Elite or Pro subscriptions
         </div>
       </div>
       
-      {waitlistedSignups.length === 0 ? (
+      {paidPlayers.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-400 text-lg mb-4">No pending applications.</p>
-          <p className="text-gray-500">Player sign-ups and applications will appear here for review and approval.</p>
+          <p className="text-gray-400 text-lg mb-4">No premium members yet.</p>
+          <p className="text-gray-500">Premium members will appear here once they sign up for Elite or Pro plans.</p>
         </div>
       ) : (
-        <AdminTable data={waitlistedSignups} showActions={true} />
+        <PaidPlayersTable data={paidPlayers} />
       )}
     </div>
   );

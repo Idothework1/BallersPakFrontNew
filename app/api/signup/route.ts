@@ -13,8 +13,12 @@ export async function POST(request: NextRequest) {
     // Define CSV columns in desired intuitive order
     const headers = [
       "timestamp",
+      "planType", // free, elite, pro
+      "paymentStatus", // completed, pending, failed
       "firstName",
       "lastName",
+      "fullName", // for paid plans
+      "age", // for paid plans
       "playedBefore",
       "experienceLevel",
       "playedClub",
@@ -27,12 +31,19 @@ export async function POST(request: NextRequest) {
       "position",
       "goal",
       "whyJoin",
+      "whyJoinReason", // for pro plans
+      "birthday", // for login authentication
+      "status", // for approval workflow
     ];
 
     const values = [
       new Date().toISOString(),
+      data.planType ?? "free", // default to free plan
+      data.paymentStatus ?? "n/a", // payment status for paid plans
       data.firstName ?? "",
       data.lastName ?? "",
+      data.fullName ?? "", // for paid plans
+      data.age ?? "", // for paid plans
       data.playedBefore ?? "",
       data.experienceLevel ?? "",
       data.playedClub ?? "",
@@ -45,6 +56,9 @@ export async function POST(request: NextRequest) {
       data.position ?? "",
       data.goal ?? "",
       data.whyJoin ?? "",
+      data.whyJoinReason ?? "", // for pro plans
+      data.birthday ?? "", // for login authentication
+      data.status ?? (data.planType === "free" ? "waitlisted" : "approved"), // default status based on plan type
     ];
 
     // Escape double quotes and wrap each value in quotes to be CSV-safe

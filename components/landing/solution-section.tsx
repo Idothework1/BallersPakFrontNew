@@ -27,7 +27,7 @@ export default function SolutionSection() {
             {[
               {
                 title: "Skill Mastery Tracks",
-                desc: "Drills used by UEFA-level players, adapted for any environment"
+                desc: "Drills used by Champions League players, adapted for any environment"
               },
               {
                 title: "Tactical IQ Sessions", 

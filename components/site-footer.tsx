@@ -92,10 +92,16 @@ function NavigationLink({ href, name }: { href: string; name: string }) {
     }
   };
 
+  // Special styling for Privacy Policy and Terms links
+  const isLegalLink = name === "Privacy" || name === "Terms";
+  const linkClasses = isLegalLink 
+    ? "cursor-pointer text-blue-300 hover:text-blue-200 duration-200 font-semibold text-sm bg-blue-900/20 px-2 py-1 rounded border border-blue-500/30"
+    : "cursor-pointer text-gray-400 hover:text-gray-200 duration-200 font-[450] text-sm";
+
   return (
     <Link
       href={href}
-      className="cursor-pointer text-gray-400 hover:text-gray-200 duration-200 font-[450] text-sm"
+      className={linkClasses}
       onClick={handleClick}
     >
       {name}

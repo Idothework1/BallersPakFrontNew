@@ -3,18 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function PricingSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleJoinClick = async (planId: string) => {
     setIsLoading(true);
     setActiveId(planId);
-    // Simulate loading for demo purposes
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    setActiveId(null);
+    
+    // Navigate to paid plan registration with plan details
+    router.push(`/paid-plan/${planId}`);
   };
 
   return (
@@ -87,6 +88,7 @@ export default function PricingSection() {
             <div className="flex items-baseline mb-2">
               <span className="text-5xl font-extrabold text-white">$299</span>
               <span className="ml-2 text-lg text-gray-400">One-Time</span>
+              <span className="ml-3 text-sm text-gray-500 line-through">Value $899</span>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Go All-In. Get on the Radar.</h3>
             <p className="text-red-400 font-medium">Mentorship from Champions League players</p>
@@ -99,7 +101,7 @@ export default function PricingSection() {
               "Weekly elite video training sessions",
               "Personalized certificate (A-Team Track)",
               "Priority for scouting Nomination and Trial, if you fit the part",
-              "Opportunity for a transfer to top clubs if we believe you&apos;re ready",
+              "Opportunity for a transfer to top clubs if we believe you're ready",
               "Bonus: Support building your highlight reel and Professional CV",
             ].map((feature) => (
               <li key={feature} className="flex items-start gap-3">
