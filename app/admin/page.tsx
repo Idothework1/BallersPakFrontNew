@@ -54,7 +54,12 @@ export default async function AdminPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Sign Ups / Waitlisted Players</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Sign Ups / Waitlisted Players</h1>
+          <p className="text-gray-400 mt-1">
+            All free signups (including ambassador referrals) require controller approval
+          </p>
+        </div>
         <div className="text-sm text-gray-400">
           Manage player applications and approvals
         </div>
@@ -66,7 +71,7 @@ export default async function AdminPage() {
           <p className="text-gray-500">Player sign-ups and applications will appear here for review and approval.</p>
         </div>
       ) : (
-        <AdminTable data={waitlistedSignups} showActions={true} />
+        <AdminTable data={waitlistedSignups} />
       )}
     </div>
   );

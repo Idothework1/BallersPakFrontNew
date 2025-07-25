@@ -38,30 +38,26 @@ async function getSignups() {
 export default async function ApprovedMembersPage() {
   const allSignups = await getSignups();
   
-  // Filter for approved sign up members (not premium)
+  // Filter for approved players
   const approvedMembers = allSignups.filter((player) => {
-    const planType = player.planType || "free";
     const status = player.status || "";
-    return planType === "free" && status === "approved";
+    return status === "approved";
   });
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">Approved Sign Up Members</h1>
-        <div className="text-sm text-gray-400">
-          Non-premium members who have been approved
+        <div>
+          <h1 className="text-3xl font-bold text-white">Approved Members</h1>
+          <p className="text-gray-400 mt-2">
+            Players approved by controllers ({approvedMembers.length} total) • Ambassador referrals tracked separately
+          </p>
         </div>
       </div>
-      
-      {approvedMembers.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg mb-4">No approved members yet.</p>
-          <p className="text-gray-500">Members who are approved from the waitlist will appear here.</p>
-        </div>
-      ) : (
-        <AdminTable data={approvedMembers} showActions={false} />
-      )}
+
+      <div className="bg-neutral-900 border border-neutral-700 rounded-lg">
+        <AdminTable data={approvedMembers} />
+      </div>
     </div>
   );
 } 

@@ -1,31 +1,43 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown, ArrowUp, ArrowDown, Filter, Users, Search, Download, Trash2, Mail, Phone, MapPin, Calendar, UserCheck, CheckCircle, UserPlus, Tag, X, Shield, Cake } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Filter, Users, Search, Download, Trash2, Mail, Phone, MapPin, Calendar, UserCheck, CheckCircle, UserPlus, Tag, X, Shield, Cake, Loader2 } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface AdminTableProps {
   data: Record<string, string>[];
-  showActions?: boolean;
 }
 
-export default function AdminTable({ data, showActions = false }: AdminTableProps) {
+interface AdminUser {
+  id: string;
+  username: string;
+  role: 'controller' | 'ambassador';
+}
+
+export default function AdminTable({ data }: AdminTableProps) {
   const [filter, setFilter] = useState("");
   const [sortKey, setSortKey] = useState<string>("timestamp");
   const [asc, setAsc] = useState<boolean>(false);
   const [deletingEmail, setDeletingEmail] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-  const [actioningEmail, setActioningEmail] = useState<string | null>(null);
-  const [rejectReason, setRejectReason] = useState<string>("");
-  const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
-  const [tags, setTags] = useState<Record<string, string[]>>({});
-  const [newTag, setNewTag] = useState<string>("");
+  
+  // Bulk assignment state
+  const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set());
+  const [controllers, setControllers] = useState<Array<{id: string, username: string}>>([]);
+  const [ambassadors, setAmbassadors] = useState<Array<{id: string, username: string}>>([]);
+  const [selectedController, setSelectedController] = useState<string>("");
+  const [selectedAmbassador, setSelectedAmbassador] = useState<string>("");
+  const [isAssigning, setIsAssigning] = useState(false);
+
+  // Admin users for name resolution
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
 
   const headers = useMemo(() => (data[0] ? Object.keys(data[0]) : []), [data]);
   const label = (key: string) =>
@@ -53,8 +65,10 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
         return <Badge className="bg-yellow-500 text-black text-xs">🟡 Intermediate</Badge>;
       case "advanced":
         return <Badge className="bg-red-500 text-white text-xs">🔴 Advanced</Badge>;
+      case "professional":
+        return <Badge className="bg-purple-500 text-white text-xs">🏆 Professional</Badge>;
       default:
-        return <Badge className="bg-gray-500 text-white text-xs">❓ Unknown</Badge>;
+        return <Badge className="bg-gray-500 text-white text-xs">❓ {level || "Unknown"}</Badge>;
     }
   };
 
@@ -103,23 +117,99 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
     return { formatted, age: age.toString() };
   };
 
-  // Selection state
-  const [selected, setSelected] = useState<Set<number>>(new Set());
-  const toggleSelect = (idx: number) => {
-    setSelected((prev) => {
-      const set = new Set(prev);
-      if (set.has(idx)) set.delete(idx); else set.add(idx);
-      return set;
-    });
+  // Get assignment badge with resolved names
+  const getAssignmentBadge = (row: Record<string, string>) => {
+    const assignedTo = row.assignedTo; // Current assignment (controller/ambassador)
+    const referredBy = row.referredBy || row.ambassadorId; // Original referral (fallback to legacy field)
+    const controllerName = row.controllerName;
+    
+    const badges = [];
+    
+    // Check for controller assignment
+    if (assignedTo) {
+      const assignedUser = adminUsers.find(user => user.id === assignedTo);
+      
+      if (assignedUser?.role === 'controller') {
+        badges.push(
+          <Badge key="controller" className="bg-blue-500 text-white text-xs mr-1">
+            <UserCheck className="h-3 w-3 mr-1" />
+            Controller: {assignedUser.username}
+          </Badge>
+        );
+      } else if (assignedUser?.role === 'ambassador') {
+        badges.push(
+          <Badge key="assigned-ambassador" className="bg-purple-500 text-white text-xs mr-1">
+            <Shield className="h-3 w-3 mr-1" />
+            Assigned to: {assignedUser.username}
+          </Badge>
+        );
+      } else if (assignedTo && !assignedUser) {
+        // Handle legacy assignments or unknown IDs
+        badges.push(
+          <Badge key="unknown-assignment" className="bg-gray-500 text-white text-xs mr-1">
+            <UserCheck className="h-3 w-3 mr-1" />
+            Assigned: {assignedTo}
+          </Badge>
+        );
+      }
+    }
+    
+    // Check for legacy controller assignment via controllerName
+    if (controllerName && !assignedTo) {
+      badges.push(
+        <Badge key="legacy-controller" className="bg-blue-500 text-white text-xs mr-1">
+          <UserCheck className="h-3 w-3 mr-1" />
+          Controller: {controllerName}
+        </Badge>
+      );
+    }
+    
+    // Show original ambassador referral (separate from assignments)
+    if (referredBy) {
+      const referringAmbassador = adminUsers.find(user => user.id === referredBy && user.role === 'ambassador');
+      
+      if (referringAmbassador) {
+        badges.push(
+          <Badge key="referral" className="bg-green-500 text-white text-xs">
+            <Shield className="h-3 w-3 mr-1" />
+            Referred by: {referringAmbassador.username}
+          </Badge>
+        );
+      } else if (referredBy) {
+        // Check if it's actually a controller ID (for legacy data)
+        const referringController = adminUsers.find(user => user.id === referredBy && user.role === 'controller');
+        
+        if (referringController) {
+          badges.push(
+            <Badge key="legacy-referral" className="bg-yellow-500 text-black text-xs">
+              <UserCheck className="h-3 w-3 mr-1" />
+              Legacy Ref: {referringController.username}
+            </Badge>
+          );
+        } else {
+          badges.push(
+            <Badge key="unknown-referral" className="bg-gray-500 text-white text-xs">
+              <Shield className="h-3 w-3 mr-1" />
+              Ref: {referredBy}
+            </Badge>
+          );
+        }
+      }
+    }
+    
+    // Show unassigned if no assignments or referrals
+    if (badges.length === 0) {
+      badges.push(
+        <Badge key="unassigned" className="bg-gray-500 text-white text-xs">
+          Unassigned
+        </Badge>
+      );
+    }
+    
+    return <div className="flex flex-wrap gap-1">{badges}</div>;
   };
 
-  const selectAll = () => {
-    if (selected.size === filtered.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(filtered.map((_, i) => i)));
-    }
-  };
+
 
   const handleDelete = async (email: string) => {
     setDeletingEmail(email);
@@ -148,87 +238,7 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
     }
   };
 
-  const handleApprove = async (email: string) => {
-    setActioningEmail(email);
-    try {
-      const response = await fetch('/api/approve-player', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        alert(`Player ${email} has been approved and moved to Approved Members!`);
-        window.location.reload();
-      } else {
-        throw new Error(result.error || 'Failed to approve player');
-      }
-    } catch (error) {
-      console.error('Error approving player:', error);
-      alert('Error approving player. Please try again.');
-    } finally {
-      setActioningEmail(null);
-    }
-  };
-
-  const handleAssignToAdmin = async (email: string) => {
-    setActioningEmail(email);
-    try {
-      alert(`Player ${email} has been assigned to admin for review!`);
-      // This would assign the player to an admin in your backend
-    } catch (error) {
-      console.error('Error assigning player:', error);
-      alert('Error assigning player. Please try again.');
-    } finally {
-      setActioningEmail(null);
-    }
-  };
-
-  const handleAddTag = (email: string) => {
-    if (!newTag.trim()) return;
-    setTags(prev => ({
-      ...prev,
-      [email]: [...(prev[email] || []), newTag.trim()]
-    }));
-    setNewTag("");
-  };
-
-  const handleSendWelcomeEmail = async (email: string) => {
-    setActioningEmail(email);
-    try {
-      alert(`Welcome email sent to ${email}!`);
-      // This would send a welcome email in your backend
-    } catch (error) {
-      console.error('Error sending welcome email:', error);
-      alert('Error sending welcome email. Please try again.');
-    } finally {
-      setActioningEmail(null);
-    }
-  };
-
-  const handleReject = async (email: string) => {
-    if (!rejectReason.trim()) {
-      alert('Please provide a reason for rejection.');
-      return;
-    }
-    setActioningEmail(email);
-    try {
-      alert(`Player ${email} has been rejected. Reason: ${rejectReason}`);
-      // This would update the player's status to "rejected" in your backend
-      window.location.reload();
-    } catch (error) {
-      console.error('Error rejecting player:', error);
-      alert('Error rejecting player. Please try again.');
-    } finally {
-      setActioningEmail(null);
-      setShowRejectModal(null);
-      setRejectReason("");
-    }
-  };
 
   // expanded row
   const [expanded, setExpanded] = useState<number | null>(null);
@@ -253,6 +263,153 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
     return arr;
   }, [filtered, sortKey, asc]);
 
+  // Load controllers and admin users for assignment and name resolution
+  useEffect(() => {
+    const loadAdminUsers = async () => {
+      try {
+        const response = await fetch("/api/admin-users");
+        if (response.ok) {
+          const data = await response.json();
+          const controllerUsers = data.users.filter((user: any) => user.role === 'controller');
+          const ambassadorUsers = data.users.filter((user: any) => user.role === 'ambassador');
+          const allAdminUsers = data.users.map((user: any) => ({
+            id: user.id,
+            username: user.username,
+            role: user.role
+          }));
+          setControllers(controllerUsers);
+          setAmbassadors(ambassadorUsers);
+          setAdminUsers(allAdminUsers); // Store all admin users for name resolution
+        }
+      } catch (error) {
+        console.error("Error loading admin users:", error);
+      }
+    };
+    loadAdminUsers();
+  }, []);
+
+  // Handle email selection for bulk assignment
+  const toggleEmailSelection = (email: string) => {
+    const newSelected = new Set(selectedEmails);
+    if (newSelected.has(email)) {
+      newSelected.delete(email);
+    } else {
+      newSelected.add(email);
+    }
+    setSelectedEmails(newSelected);
+  };
+
+  const selectAllEmails = () => {
+    const currentPageEmails = new Set(sorted.map(row => row.email));
+    const selectedOnCurrentPage = Array.from(selectedEmails).filter(email => 
+      currentPageEmails.has(email)
+    );
+    
+    if (selectedOnCurrentPage.length === sorted.length && sorted.length > 0) {
+      // Unselect all on current page
+      const newSelected = new Set(selectedEmails);
+      sorted.forEach(row => newSelected.delete(row.email));
+      setSelectedEmails(newSelected);
+    } else {
+      // Select all on current page
+      const newSelected = new Set(selectedEmails);
+      sorted.forEach(row => newSelected.add(row.email));
+      setSelectedEmails(newSelected);
+    }
+  };
+
+  // Handle bulk controller assignment
+  const handleBulkControllerAssignment = async () => {
+    if (selectedEmails.size === 0) {
+      toast.error("Please select at least one player");
+      return;
+    }
+    
+    if (!selectedController) {
+      toast.error("Please select a controller");
+      return;
+    }
+
+    setIsAssigning(true);
+    try {
+      const response = await fetch("/api/assign-players", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          playerEmails: Array.from(selectedEmails),
+          controllerId: selectedController
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message);
+        setSelectedEmails(new Set());
+        setSelectedController("");
+        // Refresh data instead of full page reload
+        if (typeof window !== 'undefined') {
+          setTimeout(() => window.location.reload(), 500);
+        }
+      } else {
+        toast.error(data.error || "Failed to assign players");
+      }
+    } catch (error) {
+      console.error("Error assigning players:", error);
+      toast.error("An error occurred while assigning players");
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
+  // Handle bulk ambassador assignment
+  const handleBulkAmbassadorAssignment = async () => {
+    if (selectedEmails.size === 0) {
+      toast.error("Please select at least one player");
+      return;
+    }
+    
+    if (!selectedAmbassador) {
+      toast.error("Please select an ambassador");
+      return;
+    }
+
+    setIsAssigning(true);
+    try {
+      const response = await fetch("/api/assign-players", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          playerEmails: Array.from(selectedEmails),
+          ambassadorId: selectedAmbassador
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message);
+        setSelectedEmails(new Set());
+        setSelectedAmbassador("");
+        // Refresh data instead of full page reload
+        if (typeof window !== 'undefined') {
+          setTimeout(() => window.location.reload(), 500);
+        }
+      } else {
+        toast.error(data.error || "Failed to assign players");
+      }
+    } catch (error) {
+      console.error("Error assigning players:", error);
+      toast.error("An error occurred while assigning players");
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
   // Statistics
   const stats = useMemo(() => {
     const total = data.length;
@@ -272,7 +429,7 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
         <div className="bg-gradient-to-br from-blue-600 to-blue-700 border border-blue-500 rounded-lg p-4">
           <div className="flex items-center gap-2 text-blue-100 mb-2">
             <Users className="h-4 w-4" />
-            <span className="text-sm font-medium">{showActions ? "Total Applications" : "Total Free Members"}</span>
+            <span className="text-sm font-medium">Total Players</span>
           </div>
           <div className="text-2xl font-bold text-white">{stats.total}</div>
         </div>
@@ -307,7 +464,7 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder={showActions ? "Search applications..." : "Search free members..."}
+            placeholder="Search players..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-10 bg-neutral-800 text-white placeholder:text-gray-400 border-neutral-700 focus-visible:ring-emerald-500"
@@ -315,31 +472,35 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
         </div>
         
         <div className="text-sm text-gray-400">
-          Showing {sorted.length} of {data.length} {showActions ? "applications" : "free members"}
+          Showing {sorted.length} of {data.length} players
         </div>
 
-        {selected.size > 0 && (
+        {selectedEmails.size > 0 && (
           <div className="flex items-center gap-2">
             <Button
               size="sm"
               onClick={() => {
                 const csvHeaders = headers.map(label).join(",") + "\n";
-                const csvRows = Array.from(selected)
-                  .map((idx) => headers.map((h) => `"${sorted[idx][h] || ""}"`).join(","))
+                const csvRows = Array.from(selectedEmails)
+                  .map((email) => {
+                    const row = sorted.find(r => r.email === email);
+                    return row ? headers.map((h) => `"${row[h] || ""}"`).join(",") : "";
+                  })
+                  .filter(row => row)
                   .join("\n");
                 const csvContent = csvHeaders + csvRows;
                 const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `free_members_${Date.now()}.csv`;
+                a.download = `players_export_${Date.now()}.csv`;
                 a.click();
                 URL.revokeObjectURL(url);
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               <Download className="h-4 w-4 mr-1" />
-              Export ({selected.size})
+              Export ({selectedEmails.size})
             </Button>
 
             <Button
@@ -375,8 +536,12 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
                 ];
 
                 const csvHeaders = ballersHeaders.join(",") + "\n";
-                const csvRows = Array.from(selected)
-                  .map((idx) => mapRowToTemplate(sorted[idx]).map((v) => `"${v}"`).join(","))
+                const csvRows = Array.from(selectedEmails)
+                  .map((email) => {
+                    const row = sorted.find(r => r.email === email);
+                    return row ? mapRowToTemplate(row).map((v) => `"${v}"`).join(",") : "";
+                  })
+                  .filter(row => row)
                   .join("\n");
 
                 const csvContent = csvHeaders + csvRows;
@@ -384,18 +549,99 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = `ballers_free_export_${Date.now()}.csv`;
+                a.download = `ballers_template_export_${Date.now()}.csv`;
                 a.click();
                 URL.revokeObjectURL(url);
               }}
               className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
             >
               <Download className="h-4 w-4 mr-1" />
-              Export Template ({selected.size})
+              Export Template ({selectedEmails.size})
             </Button>
           </div>
         )}
       </div>
+
+      {/* Bulk Assignment Controls */}
+      {selectedEmails.size > 0 && (
+        <div className="bg-blue-950 border border-blue-700 rounded-lg p-4 mb-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="text-white font-medium">
+              {selectedEmails.size} player{selectedEmails.size !== 1 ? 's' : ''} selected
+            </span>
+            
+            {/* Controller Assignment */}
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedController}
+                onChange={(e) => setSelectedController(e.target.value)}
+                className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                disabled={isAssigning}
+              >
+                <option value="">Select Controller</option>
+                {controllers.map((controller) => (
+                  <option key={controller.id} value={controller.id}>
+                    {controller.username}
+                  </option>
+                ))}
+              </select>
+              
+              <Button
+                onClick={handleBulkControllerAssignment}
+                disabled={!selectedController || isAssigning}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isAssigning ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Assign to Controller
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Ambassador Assignment */}
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedAmbassador}
+                onChange={(e) => setSelectedAmbassador(e.target.value)}
+                className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-white text-sm"
+                disabled={isAssigning}
+              >
+                <option value="">Select Ambassador</option>
+                {ambassadors.map((ambassador) => (
+                  <option key={ambassador.id} value={ambassador.id}>
+                    {ambassador.username}
+                  </option>
+                ))}
+              </select>
+              
+              <Button
+                onClick={handleBulkAmbassadorAssignment}
+                disabled={!selectedAmbassador || isAssigning}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                {isAssigning ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="h-4 w-4 mr-2" />
+                    Assign to Ambassador
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-neutral-900 border border-neutral-700 rounded-lg overflow-hidden">
@@ -404,8 +650,11 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
             <TableRow className="border-b border-neutral-700 bg-neutral-800">
               <TableHead className="w-12">
                 <Checkbox
-                  checked={selected.size === sorted.length && sorted.length > 0}
-                  onCheckedChange={selectAll}
+                  checked={
+                    sorted.length > 0 && 
+                    sorted.every(row => selectedEmails.has(row.email))
+                  }
+                  onCheckedChange={selectAllEmails}
                 />
               </TableHead>
               <TableHead className="text-white">
@@ -443,14 +692,15 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
               <TableHead className="text-white">Experience</TableHead>
               <TableHead className="text-white">Position</TableHead>
               <TableHead className="text-white">Contact</TableHead>
+              <TableHead className="text-white">Assignment</TableHead>
               <TableHead className="text-white">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sorted.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-gray-400">
-                  {showActions ? "No applications found matching your search." : "No free members found matching your search."}
+                <TableCell colSpan={10} className="text-center py-8 text-gray-400">
+                  No players found matching your search.
                 </TableCell>
               </TableRow>
             ) : (
@@ -460,14 +710,14 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
                     className={cn(
                       "border-b border-neutral-700 hover:bg-neutral-800/50 cursor-pointer",
                       expanded === idx && "bg-neutral-800/30",
-                      selected.has(idx) && "bg-emerald-900/20"
+                      selectedEmails.has(row.email) && "bg-emerald-900/20"
                     )}
                     onClick={() => setExpanded(expanded === idx ? null : idx)}
                   >
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox
-                        checked={selected.has(idx)}
-                        onCheckedChange={() => toggleSelect(idx)}
+                        checked={selectedEmails.has(row.email)}
+                        onCheckedChange={() => toggleEmailSelection(row.email)}
                       />
                     </TableCell>
                     <TableCell className="text-gray-300">{formatTimestamp(row.timestamp)}</TableCell>
@@ -494,104 +744,51 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
                       </div>
                     </TableCell>
                     <TableCell>
-                      {showActions ? (
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <Button
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleApprove(row.email);
-                            }}
-                            disabled={actioningEmail === row.email}
-                            className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAssignToAdmin(row.email);
-                            }}
-                            disabled={actioningEmail === row.email}
-                            className="h-6 px-2 text-xs border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
-                          >
-                            <Shield className="h-3 w-3 mr-1" />
-                            Assign
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSendWelcomeEmail(row.email);
-                            }}
-                            disabled={actioningEmail === row.email}
-                            className="h-6 px-2 text-xs border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
-                          >
-                            <Mail className="h-3 w-3 mr-1" />
-                            Welcome
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowRejectModal(row.email);
-                            }}
-                            disabled={actioningEmail === row.email}
-                            className="h-6 px-2 text-xs text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
-                          >
-                            <X className="h-3 w-3 mr-1" />
-                            Reject
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          {confirmDelete === row.email ? (
-                            <div className="flex items-center gap-1">
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDelete(row.email);
-                                }}
-                                disabled={deletingEmail === row.email}
-                                className="h-6 px-2 text-xs"
-                              >
-                                {deletingEmail === row.email ? "..." : "Confirm"}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setConfirmDelete(null);
-                                }}
-                                className="h-6 px-2 text-xs"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
+                      {getAssignmentBadge(row)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {confirmDelete === row.email ? (
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(row.email);
+                              }}
+                              disabled={deletingEmail === row.email}
+                              className="h-6 px-2 text-xs"
+                            >
+                              {deletingEmail === row.email ? "..." : "Confirm"}
+                            </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setConfirmDelete(row.email);
+                                setConfirmDelete(null);
                               }}
-                              className="h-6 px-2 text-xs text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
+                              className="h-6 px-2 text-xs"
                             >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Delete
+                              Cancel
                             </Button>
-                          )}
-                        </div>
-                      )}
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmDelete(row.email);
+                            }}
+                            className="h-6 px-2 text-xs text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Delete
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                   {expanded === idx && (
@@ -691,44 +888,7 @@ export default function AdminTable({ data, showActions = false }: AdminTableProp
         </Table>
       </div>
 
-      {/* Reject Modal */}
-      {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6 w-96">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Reject Player Application
-            </h3>
-            <p className="text-gray-300 mb-4">
-              Please provide a reason for rejecting <span className="font-medium">{showRejectModal}</span>:
-            </p>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Enter rejection reason..."
-              className="w-full h-24 p-3 bg-neutral-800 border border-neutral-700 rounded text-white placeholder:text-gray-400 resize-none"
-            />
-            <div className="flex justify-end gap-2 mt-4">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowRejectModal(null);
-                  setRejectReason("");
-                }}
-                disabled={actioningEmail === showRejectModal}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => handleReject(showRejectModal)}
-                disabled={actioningEmail === showRejectModal || !rejectReason.trim()}
-              >
-                {actioningEmail === showRejectModal ? "Rejecting..." : "Reject Player"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 } 

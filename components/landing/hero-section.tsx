@@ -73,7 +73,6 @@ export default function HeroSection() {
           onClick={handleJoinClick}
           className="group translate-y-[-1rem] animate-fade-in gap-1 rounded-lg text-white dark:text-black opacity-0 ease-in-out [--animation-delay:600ms] hover:bg-emerald-500 dark:hover:bg-emerald-600"
         >
-          <PlayIcon className="mr-1 size-4 transition-transform duration-300 ease-in-out group-hover:scale-110" />
           <span className="transition-colors duration-300 group-hover:text-white">Preview the Ballers Pak Video</span>
           <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
         </Button>

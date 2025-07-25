@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "@/components/user-auth-form";
 import Link from "next/link";
@@ -52,6 +52,8 @@ export default function SignupFlow() {
   const [termsAgreed, setTermsAgreed] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const ambassadorRef = searchParams.get('ref');
 
   const handleNoFirst = () => setShowConfirm(true);
 
@@ -115,6 +117,7 @@ export default function SignupFlow() {
         secondaryPosition: finalSecondaryPosition,
         goal,
         whyJoin,
+        ambassadorId: ambassadorRef, // Include ambassador referral if present
       } as const;
 
       // Fire and forget – we still redirect even if saving fails
@@ -133,7 +136,7 @@ export default function SignupFlow() {
 
       return () => clearTimeout(timer);
     }
-  }, [step, router, firstName, lastName, birthday, playedBefore, experienceLevel, playedClub, clubName, gender, hasDisability, location, email, phone, primaryPosition, secondaryPosition, customSecondaryPosition, goal, whyJoin]);
+  }, [step, router, firstName, lastName, birthday, playedBefore, experienceLevel, playedClub, clubName, gender, hasDisability, location, email, phone, primaryPosition, secondaryPosition, customSecondaryPosition, goal, whyJoin, ambassadorRef]);
 
   return (
     <>
