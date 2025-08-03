@@ -3,6 +3,9 @@ import { promises as fs } from "fs";
 import path from "path";
 import ExcelJS from "exceljs";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 // Verify controller session
 async function verifyControllerSession(request: NextRequest): Promise<string | null> {
   const sessionCookie = request.cookies.get('admin-session');

@@ -19,9 +19,9 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
   // Plan details
   const planDetails = {
     elite: {
-      name: "Elite Plan",
+      name: "Elite Plan - Annual",
       price: "$111",
-      period: "/month",
+      period: "One-Time Payment",
       color: "yellow",
       description: "Train Consistently. Grow Every Week.",
       features: [
@@ -29,6 +29,7 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
         "Tactical, technical, and mindset modules",
         "Access to monthly Q&A with Champions League-level pros",
         "Mobile-friendly + built for Pakistan-based players",
+        "Save $69 compared to monthly payments",
       ],
     },
     pro: {

@@ -2,20 +2,38 @@
 
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PricingSection() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showEliteConfirmation, setShowEliteConfirmation] = useState(false);
   const router = useRouter();
 
   const handleJoinClick = async (planId: string) => {
+    if (planId === "elite") {
+      // Show confirmation modal for Elite plan annual discount
+      setShowEliteConfirmation(true);
+      return;
+    }
+    
     setIsLoading(true);
     setActiveId(planId);
     
     // Navigate to paid plan registration with plan details
     router.push(`/paid-plan/${planId}`);
+  };
+
+  const handleEliteConfirm = async () => {
+    setShowEliteConfirmation(false);
+    setIsLoading(true);
+    setActiveId("elite");
+    
+    // Navigate to paid plan registration with plan details
+    router.push(`/paid-plan/elite`);
   };
 
   return (
@@ -41,7 +59,8 @@ export default function PricingSection() {
           
           <div className="mt-8 mb-6">
             <div className="flex items-baseline mb-2">
-              <span className="text-5xl font-extrabold text-white">$111</span>
+              <span className="text-5xl font-extrabold text-white">$15</span>
+              <span className="ml-2 text-lg text-gray-400">USD/month</span>
             </div>
             <h3 className="text-2xl font-bold text-white mb-2">Train Consistently. Grow Every Week.</h3>
             <p className="text-yellow-400 font-medium">Mentorship from Champions League players</p>
@@ -128,6 +147,85 @@ export default function PricingSection() {
       </div>
 
       </section>
+
+      {/* Elite Plan Annual Discount Confirmation Modal */}
+      <AnimatePresence>
+        {showEliteConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setShowEliteConfirmation(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md mx-4 bg-gray-900 border border-yellow-500 rounded-2xl p-6 shadow-xl"
+            >
+              <button
+                className="absolute -right-3 -top-3 rounded-full bg-yellow-500 p-2 text-black shadow-lg hover:bg-yellow-400 transition-colors"
+                onClick={() => setShowEliteConfirmation(false)}
+              >
+                <XIcon className="h-4 w-4" />
+              </button>
+
+              <div className="text-center">
+                <div className="mb-4">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold bg-yellow-500 text-black rounded-full">
+                    🟡 Elite Plan - Special Offer
+                  </span>
+                </div>
+
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  💰 Pay for the Full Year & Save Big!
+                </h3>
+
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-300">Monthly Plan (12 months)</span>
+                    <span className="text-lg text-gray-400 line-through">$180</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-white font-semibold">Annual Plan (Pay Now)</span>
+                    <span className="text-2xl font-bold text-yellow-400">$111</span>
+                  </div>
+                  <div className="border-t border-gray-700 pt-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-400 font-semibold">You Save</span>
+                      <span className="text-xl font-bold text-green-400">$69</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-gray-300 text-sm mb-6">
+                  Get full access to the entire program for 12 months with a one-time payment of just $111 USD instead of paying $15/month.
+                </p>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setShowEliteConfirmation(false)}
+                    variant="outline"
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                  >
+                    Maybe Later
+                  </Button>
+                  <Button
+                    onClick={handleEliteConfirm}
+                    disabled={isLoading}
+                    className="flex-1 bg-gradient-to-r from-yellow-500 to-yellow-400 hover:opacity-90 text-black font-semibold"
+                  >
+                    {isLoading ? "Processing..." : "🎯 Pay $111 Now & Save $69"}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

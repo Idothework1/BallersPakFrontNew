@@ -2,6 +2,7 @@ import SignupFlow from "@/components/SignupFlow";
 import FadeInOverlay from "@/components/fade-in-overlay";
 import DotPatternWithGlowEffectDemo from "@/components/DotPatternWithGlowEffectDemo";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Sign Up | Magic UI",
@@ -18,7 +19,9 @@ export default function SignUpPage() {
       </div>
 
       <div className="relative container flex h-screen w-screen flex-col items-center justify-center">
-        <SignupFlow />
+        <Suspense fallback={<div className="text-white">Loading...</div>}>
+          <SignupFlow />
+        </Suspense>
       </div>
     </>
   );

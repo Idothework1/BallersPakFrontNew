@@ -7,7 +7,6 @@ import { AlignJustify, XIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const menuItem = [
   {
@@ -71,22 +70,6 @@ export function SiteHeader() {
 
   const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false);
 
-  // Fade overlay for sign-up transition
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const router = useRouter();
-
-  const handleSignUpClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    setIsTransitioning(true);
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("pageTransition"));
-    }
-    setTimeout(() => {
-      router.push("/signup");
-    }, 1000);
-  };
-
   useEffect(() => {
     const html = document.querySelector("html");
     if (html) html.classList.toggle("overflow-hidden", hamburgerMenuIsOpen);
@@ -105,13 +88,6 @@ export function SiteHeader() {
 
   return (
     <>
-      {/* Black overlay for smooth transition */}
-      <div
-        className={cn(
-          "fixed inset-0 z-50 bg-black transition-opacity duration-1000 pointer-events-none",
-          isTransitioning ? "opacity-100" : "opacity-0"
-        )}
-      />
       <header className="fixed left-0 top-0 z-40 w-full translate-y-[-1rem] animate-fade-in border-b opacity-0 backdrop-blur-[12px] [--animation-delay:600ms]">
         <div className="container flex h-[3.5rem] items-center justify-between">
           <Link className="text-md flex items-center" href="/">
@@ -147,16 +123,6 @@ export function SiteHeader() {
               href="/profile"
             >
               Log in
-            </Link>
-            <Link
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "text-sm"
-              )}
-              href="/signup"
-              onClick={handleSignUpClick}
-            >
-              Sign up
             </Link>
           </div>
           <button
@@ -234,23 +200,7 @@ export function SiteHeader() {
               </Link>
             </motion.li>
             
-            <motion.li
-              variants={mobileLinkVar}
-              className="border-grey-dark pl-6 py-0.5 md:border-none"
-            >
-              <Link
-                className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
-                  hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
-                }`}
-                href="/signup"
-                onClick={(e) => {
-                  setHamburgerMenuIsOpen(false);
-                  handleSignUpClick(e);
-                }}
-              >
-                Sign up
-              </Link>
-            </motion.li>
+
           </motion.ul>
         </motion.nav>
       </AnimatePresence>

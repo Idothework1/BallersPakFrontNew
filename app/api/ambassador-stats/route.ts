@@ -3,6 +3,9 @@ import { promises as fs } from "fs";
 import path from "path";
 import ExcelJS from "exceljs";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const ambassadorId = request.nextUrl.searchParams.get("ambassadorId");
