@@ -1,23 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import ExcelJS from "exceljs";
+import { csvManager } from "@/lib/csv-data-manager";
 
-interface AdminUser {
-  username: string;
-  password: string;
-  role: 'admin' | 'controller' | 'ambassador';
-  id: string;
-  created: string;
-  stats?: {
-    signups?: number;
-    conversions?: number;
-    assignments?: number;
-    completed?: number;
-  };
-}
-
-// Hardcoded admin credentials
+// Hardcoded main admin credentials
 const MAIN_ADMIN = {
   username: "b@ll3rsp4k",
   password: "ibrahim123",
@@ -25,44 +9,6 @@ const MAIN_ADMIN = {
   id: "admin-main",
   created: new Date().toISOString()
 };
-
-async function getAdminUsers(): Promise<AdminUser[]> {
-  const dataDir = path.join(process.cwd(), "data");
-  const xlsxPath = path.join(dataDir, "admin-users.xlsx");
-  
-  try {
-    await fs.access(xlsxPath);
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(xlsxPath);
-    const worksheet = workbook.getWorksheet("AdminUsers") ?? workbook.worksheets[0];
-    
-    if (!worksheet) return [MAIN_ADMIN];
-    
-    const headers = (worksheet.getRow(1).values as string[]).slice(1);
-    const rows = worksheet.getRows(2, worksheet.rowCount - 1) ?? [];
-    
-    const users = rows.map((row) => {
-      const values = row.values as (string | number | undefined)[];
-      const obj: Record<string, string> = {};
-      headers.forEach((header, idx) => {
-        obj[header] = String(values[idx + 1] ?? "");
-      });
-      
-      return {
-        username: obj.username,
-        password: obj.password,
-        role: obj.role as 'admin' | 'controller' | 'ambassador',
-        id: obj.id,
-        created: obj.created,
-        stats: obj.stats ? JSON.parse(obj.stats) : {}
-      } as AdminUser;
-    });
-    
-    return [MAIN_ADMIN, ...users];
-  } catch {
-    return [MAIN_ADMIN];
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,14 +19,44 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Username and password required" }, { status: 400 });
       }
 
-      const adminUsers = await getAdminUsers();
+      // Check hardcoded admin first
+      if (username === MAIN_ADMIN.username && password === MAIN_ADMIN.password) {
+        const sessionToken = Buffer.from(JSON.stringify({
+          id: MAIN_ADMIN.id,
+          username: MAIN_ADMIN.username,
+          role: MAIN_ADMIN.role,
+          exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        })).toString('base64');
+
+        const response = NextResponse.json({
+          success: true,
+          user: {
+            id: MAIN_ADMIN.id,
+            username: MAIN_ADMIN.username,
+            role: MAIN_ADMIN.role
+          },
+          dashboardUrl: '/admin/dashboard'
+        });
+
+        response.cookies.set('admin-session', sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 24 * 60 * 60 // 24 hours
+        });
+
+        return response;
+      }
+
+      // Check CSV admin users
+      const adminUsers = await csvManager.getAdminUsers();
       const user = adminUsers.find(u => u.username === username && u.password === password);
 
       if (!user) {
         return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
       }
 
-      // Create session token (in production, use proper JWT)
+      // Create session token
       const sessionToken = Buffer.from(JSON.stringify({
         id: user.id,
         username: user.username,
@@ -148,4 +124,4 @@ export async function POST(request: NextRequest) {
     console.error("Admin auth error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-} 
+}

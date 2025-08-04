@@ -10,9 +10,10 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Filter, Users, Search, Download, Trash
 import React from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { SignupData } from "@/lib/csv-data-manager";
 
 interface AdminTableProps {
-  data: Record<string, string>[];
+  data: SignupData[];
 }
 
 interface AdminUser {
@@ -118,10 +119,9 @@ export default function AdminTable({ data }: AdminTableProps) {
   };
 
   // Get assignment badge with resolved names
-  const getAssignmentBadge = (row: Record<string, string>) => {
+  const getAssignmentBadge = (row: SignupData) => {
     const assignedTo = row.assignedTo; // Current assignment (controller/ambassador)
     const referredBy = row.referredBy || row.ambassadorId; // Original referral (fallback to legacy field)
-    const controllerName = row.controllerName;
     
     const badges = [];
     
@@ -152,16 +152,6 @@ export default function AdminTable({ data }: AdminTableProps) {
           </Badge>
         );
       }
-    }
-    
-    // Check for legacy controller assignment via controllerName
-    if (controllerName && !assignedTo) {
-      badges.push(
-        <Badge key="legacy-controller" className="bg-blue-500 text-white text-xs mr-1">
-          <UserCheck className="h-3 w-3 mr-1" />
-          Controller: {controllerName}
-        </Badge>
-      );
     }
     
     // Show original ambassador referral (separate from assignments)
@@ -256,8 +246,8 @@ export default function AdminTable({ data }: AdminTableProps) {
     if (!sortKey) return filtered;
     const arr = [...filtered];
     arr.sort((a, b) => {
-      const va = a[sortKey] ?? "";
-      const vb = b[sortKey] ?? "";
+      const va = (a as any)[sortKey] ?? "";
+      const vb = (b as any)[sortKey] ?? "";
       return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
     });
     return arr;
@@ -484,7 +474,7 @@ export default function AdminTable({ data }: AdminTableProps) {
                 const csvRows = Array.from(selectedEmails)
                   .map((email) => {
                     const row = sorted.find(r => r.email === email);
-                    return row ? headers.map((h) => `"${row[h] || ""}"`).join(",") : "";
+                    return row ? headers.map((h) => `"${(row as any)[h] || ""}"`).join(",") : "";
                   })
                   .filter(row => row)
                   .join("\n");
@@ -521,18 +511,18 @@ export default function AdminTable({ data }: AdminTableProps) {
                   "Location",
                 ];
 
-                const mapRowToTemplate = (row: Record<string, string>): string[] => [
+                const mapRowToTemplate = (row: SignupData): string[] => [
                   "BallersPak Free",
-                  row["firstName"] || "N/A",
-                  row["lastName"] || "N/A",
-                  row["gender"] || "N/A",
-                  row["birthday"] ? formatBirthdayAndAge(row["birthday"]).age : "N/A",
-                  row["birthday"] ? formatBirthdayAndAge(row["birthday"]).formatted : "N/A",
-                  row["email"] || "N/A",
-                  row["phone"] || "N/A",
-                  row["experienceLevel"] || "N/A",
-                  row["position"] || "N/A",
-                  row["location"] || "N/A",
+                  row.firstName || "N/A",
+                  row.lastName || "N/A",
+                  row.gender || "N/A",
+                  row.birthday ? formatBirthdayAndAge(row.birthday).age : "N/A",
+                  row.birthday ? formatBirthdayAndAge(row.birthday).formatted : "N/A",
+                  row.email || "N/A",
+                  row.phone || "N/A",
+                  row.experienceLevel || "N/A",
+                  row.position || "N/A",
+                  row.location || "N/A",
                 ];
 
                 const csvHeaders = ballersHeaders.join(",") + "\n";
@@ -724,7 +714,7 @@ export default function AdminTable({ data }: AdminTableProps) {
                     <TableCell className="text-white font-medium">
                       {`${row.firstName || ""} ${row.lastName || ""}`.trim() || "N/A"}
                     </TableCell>
-                    <TableCell>{getGenderBadge(row.gender)}</TableCell>
+                    <TableCell>{getGenderBadge(row.gender || "")}</TableCell>
                     <TableCell className="text-gray-300">
                       {row.birthday ? (
                         <div className="flex flex-col">
@@ -735,7 +725,7 @@ export default function AdminTable({ data }: AdminTableProps) {
                         "N/A"
                       )}
                     </TableCell>
-                    <TableCell>{getExperienceBadge(row.experienceLevel)}</TableCell>
+                    <TableCell>{getExperienceBadge(row.experienceLevel || "")}</TableCell>
                     <TableCell className="text-gray-300">{row.position || "N/A"}</TableCell>
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-1">
@@ -806,7 +796,7 @@ export default function AdminTable({ data }: AdminTableProps) {
                               <div className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-gray-400" />
                                 <span className="text-sm text-gray-300">Phone:</span>
-                                <span className="text-sm text-white">{formatPhoneNumber(row.phone)}</span>
+                                <span className="text-sm text-white">{formatPhoneNumber(row.phone || "")}</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4 text-gray-400" />
@@ -844,7 +834,7 @@ export default function AdminTable({ data }: AdminTableProps) {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-300">Experience Level:</span>
-                                {getExperienceBadge(row.experienceLevel)}
+                                {getExperienceBadge(row.experienceLevel || "")}
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-300">Position:</span>

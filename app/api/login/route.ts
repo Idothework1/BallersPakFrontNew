@@ -1,64 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
-import ExcelJS from "exceljs";
-
-// Force dynamic because we rely on filesystem reads
-export const dynamic = "force-dynamic";
+import { dataManager } from "@/lib/data-manager";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, birthday } = await request.json();
+    const { email } = await request.json();
 
-    if (!email || !birthday) {
-      return NextResponse.json({ success: false, error: "Email and birthday are required" }, { status: 400 });
+    if (!email) {
+      return NextResponse.json({ 
+        success: false, 
+        error: "Email is required" 
+      }, { status: 400 });
     }
 
-    // Read the signups data
-    const dataDir = path.join(process.cwd(), "data");
-    const xlsxPath = path.join(dataDir, "signups.xlsx");
+    console.log("🔍 Attempting login for:", email);
+
+    // Find user by email
+    const userData = await dataManager.findSignupByEmail(email);
     
-    try {
-      await fs.access(xlsxPath);
-    } catch {
-      return NextResponse.json({ success: false, error: "No users found" }, { status: 404 });
+    if (!userData) {
+      console.log("❌ User not found:", email);
+      return NextResponse.json({ 
+        success: false, 
+        error: "No account found with this email. Please sign up first." 
+      }, { status: 404 });
     }
 
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(xlsxPath);
-    const worksheet = workbook.getWorksheet("Signups") ?? workbook.worksheets[0];
-    
-    if (!worksheet) {
-      return NextResponse.json({ success: false, error: "No users found" }, { status: 404 });
-    }
-
-    const headers = (worksheet.getRow(1).values as string[]).slice(1);
-    const rows = worksheet.getRows(2, worksheet.rowCount - 1) ?? [];
-
-    // Find user by email and birthday
-    const user = rows.find((row) => {
-      const values = row.values as (string | number | undefined)[];
-      const userData: Record<string, string> = {};
-      headers.forEach((header, idx) => {
-        userData[header] = String(values[idx + 1] ?? "");
-      });
-      
-      return userData.email === email && userData.birthday === birthday;
+    console.log("✅ User found:", {
+      email: userData.email,
+      status: userData.status,
+      planType: userData.planType,
+      paymentStatus: userData.paymentStatus
     });
 
-    if (!user) {
-      return NextResponse.json({ success: false, error: "Invalid email or birthday" }, { status: 401 });
-    }
-
-    // Extract user data
-    const values = user.values as (string | number | undefined)[];
-    const userData: Record<string, string> = {};
-    headers.forEach((header, idx) => {
-      userData[header] = String(values[idx + 1] ?? "");
-    });
-
-    // Check user status for approval
-    const userStatus = userData.status || "waitlisted";
+    const userStatus = userData.status?.toLowerCase() || "waitlisted";
     const planType = userData.planType || "free";
 
     // If user is waitlisted and not a premium member, they need approval
@@ -81,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // User is approved or is a premium member - allow login
     const userProfile = {
-      id: user.number, // row number as ID
+      id: userData.email, // Use email as ID for CSV
       email: userData.email,
       firstName: userData.firstName,
       lastName: userData.lastName,
@@ -91,16 +65,35 @@ export async function POST(request: NextRequest) {
       planType: planType,
       paymentStatus: userData.paymentStatus || "n/a",
       position: userData.position,
-      currentLevel: userData.experienceLevel || userData.currentLevel,
+      currentLevel: userData.experienceLevel,
       location: userData.location,
       goal: userData.goal,
       timestamp: userData.timestamp,
       status: userStatus,
     };
 
-    return NextResponse.json({ success: true, user: userProfile });
+    // Set cookie for server-side auth
+    const response = NextResponse.json({ success: true, user: userProfile });
+    
+    // Set a secure httpOnly cookie for session management
+    response.cookies.set('ballerspak_session', JSON.stringify({
+      id: userProfile.id,
+      email: userProfile.email,
+      planType: userProfile.planType,
+      exp: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+    }), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 // 24 hours
+    });
+    
+    return response;
   } catch (error) {
     console.error("Login error:", error);
-    return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: "Internal Server Error" 
+    }, { status: 500 });
   }
-} 
+}

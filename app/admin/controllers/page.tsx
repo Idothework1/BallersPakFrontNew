@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, TrendingUp, CheckCircle, XCircle, Calendar, Trash2, AlertCircle, Eye, EyeOff, Copy } from "lucide-react";
+import { Users, TrendingUp, CheckCircle, XCircle, Calendar, Trash2, AlertCircle, Eye, EyeOff, Copy, Clock, UserX } from "lucide-react";
 import { toast } from "sonner";
 
 interface Controller {
@@ -21,20 +21,66 @@ interface Controller {
   };
 }
 
+interface DetailedStats {
+  total: number;
+  waitlisted: number;
+  approved: number;
+  rejected: number;
+}
+
 export default function ControllersPage() {
   const [controllers, setControllers] = useState<Controller[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
+  const [detailedStats, setDetailedStats] = useState<Record<string, DetailedStats>>({});
 
   const fetchControllers = async () => {
     try {
+      // Fetch controllers
       const response = await fetch("/api/admin-users");
       const data = await response.json();
       
       if (response.ok) {
         const controllerUsers = data.users.filter((user: any) => user.role === 'controller');
         setControllers(controllerUsers);
+        
+        // Fetch player data to calculate detailed stats
+        const signupsResponse = await fetch("/api/admin-stats");
+        if (signupsResponse.ok) {
+          const signupsData = await signupsResponse.json();
+          const allSignups = signupsData.signups || [];
+          
+          // Calculate detailed stats for each controller
+          const stats: Record<string, DetailedStats> = {};
+          
+          controllerUsers.forEach((controller: Controller) => {
+            const assignedPlayers = allSignups.filter((player: any) => 
+              player.assignedTo === controller.id || player.processedBy === controller.id
+            );
+            
+            const waitlisted = assignedPlayers.filter((p: any) => 
+              p.status === 'waitlisted' || p.status === 'pending' || !p.status
+            ).length;
+            
+            const approved = assignedPlayers.filter((p: any) => 
+              p.status === 'approved'
+            ).length;
+            
+            const rejected = assignedPlayers.filter((p: any) => 
+              p.status === 'rejected'
+            ).length;
+            
+            stats[controller.id] = {
+              total: assignedPlayers.length,
+              waitlisted,
+              approved,
+              rejected
+            };
+          });
+          
+          setDetailedStats(stats);
+        }
       } else {
         toast.error("Failed to fetch controllers");
       }
@@ -77,9 +123,10 @@ export default function ControllersPage() {
     fetchControllers();
   }, []);
 
-  const calculateAcceptanceRate = (stats: Controller['stats']) => {
-    if (stats.assignments === 0) return 0;
-    return Math.round((stats.completed / stats.assignments) * 100);
+  const calculateAcceptanceRate = (controllerId: string) => {
+    const stats = detailedStats[controllerId];
+    if (!stats || stats.total === 0) return 0;
+    return Math.round((stats.approved / stats.total) * 100);
   };
 
   const formatDate = (dateString: string) => {
@@ -126,7 +173,7 @@ export default function ControllersPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="bg-neutral-950 border-neutral-800">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-neutral-400">Total Controllers</CardTitle>
@@ -136,29 +183,45 @@ export default function ControllersPage() {
 
         <Card className="bg-neutral-950 border-neutral-800">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-neutral-400">Total Assignments</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-400">Total Assigned</CardTitle>
             <div className="text-2xl font-bold text-white">
-              {controllers.reduce((sum, c) => sum + c.stats.assignments, 0)}
+              {Object.values(detailedStats).reduce((sum, stats) => sum + stats.total, 0)}
             </div>
           </CardHeader>
         </Card>
 
         <Card className="bg-neutral-950 border-neutral-800">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-neutral-400">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-400">Waitlisted</CardTitle>
+            <div className="text-2xl font-bold text-yellow-400">
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                {Object.values(detailedStats).reduce((sum, stats) => sum + stats.waitlisted, 0)}
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
+        <Card className="bg-neutral-950 border-neutral-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-neutral-400">Approved</CardTitle>
             <div className="text-2xl font-bold text-green-400">
-              {controllers.reduce((sum, c) => sum + c.stats.completed, 0)}
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                {Object.values(detailedStats).reduce((sum, stats) => sum + stats.approved, 0)}
+              </div>
             </div>
           </CardHeader>
         </Card>
 
         <Card className="bg-neutral-950 border-neutral-800">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-neutral-400">Avg. Success Rate</CardTitle>
-            <div className="text-2xl font-bold text-blue-400">
-              {controllers.length > 0 
-                ? Math.round(controllers.reduce((sum, c) => sum + calculateAcceptanceRate(c.stats), 0) / controllers.length)
-                : 0}%
+            <CardTitle className="text-sm font-medium text-neutral-400">Rejected</CardTitle>
+            <div className="text-2xl font-bold text-red-400">
+              <div className="flex items-center gap-2">
+                <UserX className="h-5 w-5" />
+                {Object.values(detailedStats).reduce((sum, stats) => sum + stats.rejected, 0)}
+              </div>
             </div>
           </CardHeader>
         </Card>
@@ -190,8 +253,10 @@ export default function ControllersPage() {
                       <TableHead className="text-neutral-300">Username</TableHead>
                       <TableHead className="text-neutral-300">Password</TableHead>
                       <TableHead className="text-neutral-300">Created</TableHead>
-                      <TableHead className="text-neutral-300">Assignments</TableHead>
-                      <TableHead className="text-neutral-300">Completed</TableHead>
+                      <TableHead className="text-neutral-300">Total</TableHead>
+                      <TableHead className="text-neutral-300">Waitlisted</TableHead>
+                      <TableHead className="text-neutral-300">Approved</TableHead>
+                      <TableHead className="text-neutral-300">Rejected</TableHead>
                       <TableHead className="text-neutral-300">Success Rate</TableHead>
                       <TableHead className="text-neutral-300">Actions</TableHead>
                     </TableRow>
@@ -238,25 +303,38 @@ export default function ControllersPage() {
                         </TableCell>
                       <TableCell className="text-neutral-300">
                         <Badge variant="outline" className="border-blue-600 text-blue-400">
-                          {controller.stats.assignments}
+                          {detailedStats[controller.id]?.total || 0}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-neutral-300">
+                        <Badge variant="outline" className="border-yellow-600 text-yellow-400">
+                          <Clock className="h-3 w-3 mr-1 inline" />
+                          {detailedStats[controller.id]?.waitlisted || 0}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-neutral-300">
                         <Badge variant="outline" className="border-green-600 text-green-400">
-                          {controller.stats.completed}
+                          <CheckCircle className="h-3 w-3 mr-1 inline" />
+                          {detailedStats[controller.id]?.approved || 0}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-neutral-300">
+                        <Badge variant="outline" className="border-red-600 text-red-400">
+                          <UserX className="h-3 w-3 mr-1 inline" />
+                          {detailedStats[controller.id]?.rejected || 0}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {calculateAcceptanceRate(controller.stats) >= 70 ? (
+                          {calculateAcceptanceRate(controller.id) >= 70 ? (
                             <CheckCircle className="h-4 w-4 text-green-400" />
-                          ) : calculateAcceptanceRate(controller.stats) >= 50 ? (
+                          ) : calculateAcceptanceRate(controller.id) >= 50 ? (
                             <AlertCircle className="h-4 w-4 text-yellow-400" />
                           ) : (
                             <XCircle className="h-4 w-4 text-red-400" />
                           )}
                           <span className="text-white">
-                            {calculateAcceptanceRate(controller.stats)}%
+                            {calculateAcceptanceRate(controller.id)}%
                           </span>
                         </div>
                       </TableCell>

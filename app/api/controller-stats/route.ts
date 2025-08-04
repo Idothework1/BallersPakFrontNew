@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import ExcelJS from "exceljs";
+import { dataManager } from "@/lib/data-manager";
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -19,34 +17,6 @@ async function verifyControllerSession(request: NextRequest): Promise<string | n
   }
 }
 
-async function getSignupsData() {
-  const dataDir = path.join(process.cwd(), "data");
-  const xlsxPath = path.join(dataDir, "signups.xlsx");
-  
-  try {
-    await fs.access(xlsxPath);
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(xlsxPath);
-    const worksheet = workbook.getWorksheet("Signups") ?? workbook.worksheets[0];
-    
-    if (!worksheet || worksheet.rowCount <= 1) return [];
-    
-    const headers = (worksheet.getRow(1).values as string[]).slice(1);
-    const rows = worksheet.getRows(2, worksheet.rowCount - 1) ?? [];
-    
-    return rows.map((row) => {
-      const values = row.values as (string | number | undefined)[];
-      const obj: Record<string, string> = {};
-      headers.forEach((header, idx) => {
-        obj[header] = String(values[idx + 1] ?? "");
-      });
-      return obj;
-    });
-  } catch {
-    return [];
-  }
-}
-
 export async function GET(request: NextRequest) {
   try {
     const controllerId = await verifyControllerSession(request);
@@ -57,20 +27,20 @@ export async function GET(request: NextRequest) {
     console.log(`📊 Loading stats for controller: ${controllerId}`);
 
     // Get all signups data
-    const allSignups = await getSignupsData();
+    const allSignups = await dataManager.getSignups();
     console.log(`📊 Total signups found: ${allSignups.length}`);
     
     // Filter for users assigned to this controller
     const assignedUsers = allSignups
       .filter(signup => {
-        const isAssigned = signup.assignedTo === controllerId;
+        const isAssigned = signup.assignedTo === controllerId || signup.processedBy === controllerId;
         if (isAssigned) {
           console.log(`📊 Found assigned user: ${signup.email} (status: ${signup.status})`);
         }
         return isAssigned;
       })
       .map(signup => ({
-        id: signup.email, // Use email as ID for now
+        id: signup.email, // Use email as ID for CSV
         firstName: signup.firstName || '',
         lastName: signup.lastName || '',
         email: signup.email || '',
@@ -138,4 +108,4 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching controller stats:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-} 
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { TextAnimate } from "@/components/magicui/text-animate";
@@ -10,15 +10,31 @@ interface PaidPlanFlowProps {
   plan: "elite" | "pro";
 }
 
-type Step = "onboarding" | "payment" | "success";
+type Step = "onboarding" | "success";
 
 export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
   const [step, setStep] = useState<Step>("onboarding");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const billing = searchParams.get("billing") || "annual"; // default to annual
 
-  // Plan details
+  // Plan details based on billing type
   const planDetails = {
-    elite: {
+    elite: billing === "monthly" ? {
+      name: "Elite Plan - Monthly",
+      price: "$15",
+      period: "per month",
+      color: "yellow",
+      description: "Train Consistently. Grow Every Week.",
+      features: [
+        "Full access to the entire program",
+        "Tactical, technical, and mindset modules",
+        "Access to monthly Q&A with Champions League-level pros",
+        "Mobile-friendly + built for Pakistan-based players",
+        "Cancel anytime",
+      ],
+    } : {
       name: "Elite Plan - Annual",
       price: "$111",
       period: "One-Time Payment",
@@ -62,87 +78,93 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
     whyJoinReason: "",
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    general: "",
+  });
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear errors when user starts typing
+    if (field === "email" && errors.email) {
+      setErrors(prev => ({ ...prev, email: "" }));
+    }
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: "" }));
+    }
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const canContinueToPayment = () => {
     const { fullName, email, birthday, position, currentLevel } = formData;
     const basicFieldsComplete = fullName && email && birthday && position && currentLevel;
+    const isEmailValid = validateEmail(email);
     
     if (plan === "pro") {
-      return basicFieldsComplete && formData.whyJoinReason;
+      return basicFieldsComplete && formData.whyJoinReason && isEmailValid;
     }
     
-    return basicFieldsComplete;
+    return basicFieldsComplete && isEmailValid;
   };
 
-  const handleContinueToPayment = () => {
+  const handleContinueToPayment = async () => {
+    // Validate email first
+    if (!validateEmail(formData.email)) {
+      setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
+      return;
+    }
+
     if (canContinueToPayment()) {
-      setStep("payment");
+      // Skip the intermediate payment screen and go directly to Stripe
+      await handleCompletePayment();
     }
   };
 
   const handleCompletePayment = async () => {
     try {
-      // Calculate age from birthday for display purposes
-      const calculateAge = (birthday: string): string => {
-        const today = new Date();
-        const birthDate = new Date(birthday);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-        
-        return age.toString();
-      };
-
-      // Prepare payload for paid plan registration
-      const payload = {
-        planType: plan, // "elite" or "pro"
-        paymentStatus: "completed", // simulated payment success
-        // Split fullName into firstName and lastName for admin table compatibility
-        firstName: formData.fullName.split(' ')[0] || '',
-        lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
-        fullName: formData.fullName, // Keep fullName for display
-        email: formData.email,
-        age: calculateAge(formData.birthday), // Calculate age from birthday
-        birthday: formData.birthday, // Use actual birthday for login
-        position: formData.position,
-        experienceLevel: formData.currentLevel, // Map to experienceLevel for admin table
-        currentLevel: formData.currentLevel, // Keep currentLevel for compatibility
-        whyJoinReason: formData.whyJoinReason, // for pro plans
-        goal: "Pro-level training", // default goal for paid plans
-        // Set default values for fields that don't apply to paid plans
-        playedBefore: "", // Not collected in paid flow
-        playedClub: "", // Not collected in paid flow
-        clubName: "", // Not collected in paid flow
-        gender: "", // Not collected in paid flow
-        hasDisability: "", // Not collected in paid flow
-        location: "", // Not collected in paid flow
-        phone: "", // Not collected in paid flow
-        whyJoin: formData.whyJoinReason || "", // Map to whyJoin for compatibility
-      };
-
-      // Send to API
-      const response = await fetch("/api/signup", {
+      setIsLoading(true);
+      setErrors(prev => ({ ...prev, general: "" })); // Clear any previous errors
+      
+      // Create Stripe checkout session
+      const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          plan: plan,
+          billing: billing,
+          formData: formData
+        }),
       });
 
-      if (response.ok) {
-        setStep("success");
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
       } else {
-        throw new Error("Failed to save registration data");
+        throw new Error(data.error || "Failed to create checkout session");
       }
     } catch (error) {
-      console.error("Payment completion error:", error);
-      // For demo purposes, still proceed to success
-      // In production, show error message
-      setStep("success");
+      console.error("Payment initiation error:", error);
+      setIsLoading(false);
+      
+      // Show specific error message
+      let errorMessage = "Failed to initiate payment. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("email")) {
+          setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
+          return;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setErrors(prev => ({ ...prev, general: errorMessage }));
     }
   };
 
@@ -198,9 +220,16 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full bg-gray-800 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                  errors.email 
+                    ? "border-red-500 focus:ring-red-500" 
+                    : "border-gray-600 focus:ring-blue-500"
+                }`}
                 placeholder="you@example.com"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -269,17 +298,23 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
             )}
           </div>
 
+          {errors.general && (
+            <div className="mt-6 p-4 bg-red-900/30 border border-red-700 rounded-lg">
+              <p className="text-red-400 text-sm">{errors.general}</p>
+            </div>
+          )}
+
           <div className="mt-8 flex justify-end">
             <Button
               onClick={handleContinueToPayment}
-              disabled={!canContinueToPayment()}
+              disabled={!canContinueToPayment() || isLoading}
               className={`px-8 py-3 ${
                 plan === "elite"
                   ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-black"
                   : "bg-gradient-to-r from-red-500 to-red-400 text-white"
               } font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Continue to Payment
+              {isLoading ? "Redirecting to Payment..." : "Continue to Payment"}
             </Button>
           </div>
         </div>
@@ -287,144 +322,6 @@ export default function PaidPlanFlow({ plan }: PaidPlanFlowProps) {
     );
   }
 
-  if (step === "payment") {
-    return (
-      <div className="w-full max-w-2xl mx-auto">
-        <div className="mb-8">
-          <button
-            onClick={() => setStep("onboarding")}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
-          >
-            <ArrowLeft size={20} />
-            Back to profile
-          </button>
-          
-          <TextAnimate
-            animation="blurInUp"
-            once
-            className="text-3xl font-bold text-white mb-6"
-          >
-            Complete Your Enrollment
-          </TextAnimate>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Order Summary */}
-          <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-6 backdrop-blur-md">
-            <h3 className="text-xl font-bold text-white mb-4">Order Summary</h3>
-            
-            <div className={`p-4 rounded-lg border-2 mb-6 ${
-              plan === "elite" 
-                ? "border-yellow-500 bg-yellow-500/10" 
-                : "border-red-500 bg-red-500/10"
-            }`}>
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold text-white">{currentPlan.name}</h4>
-                <span className="text-2xl font-bold text-white">
-                  {currentPlan.price}
-                  <span className="text-sm font-normal text-gray-400">
-                    {currentPlan.period}
-                  </span>
-                </span>
-              </div>
-              <p className="text-sm text-gray-300 mb-3">{currentPlan.description}</p>
-            </div>
-
-            <div className="space-y-2 mb-6">
-              <h4 className="font-semibold text-white">What you get:</h4>
-              <ul className="space-y-1">
-                {currentPlan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-gray-300">
-                    <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-gray-700 pt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-300">Total</span>
-                <span className="text-2xl font-bold text-white">
-                  {currentPlan.price}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Form */}
-          <div className="bg-gray-900/50 border border-gray-700 rounded-2xl p-6 backdrop-blur-md">
-            <h3 className="text-xl font-bold text-white mb-4">Payment Details</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="1234 5678 9012 3456"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="MM/YY"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="123"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Cardholder Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-green-900/30 border border-green-700 rounded-lg">
-              <div className="flex items-center gap-2 text-green-400 text-sm">
-                <CheckCircle className="h-4 w-4" />
-                <span>🔒 SSL Secured • 30-day money-back guarantee</span>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleCompletePayment}
-              className={`w-full mt-6 py-3 ${
-                plan === "elite"
-                  ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-black"
-                  : "bg-gradient-to-r from-red-500 to-red-400 text-white"
-              } font-semibold text-lg`}
-            >
-              Complete Enrollment
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (step === "success") {
     return (

@@ -1,6 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
-import ExcelJS from "exceljs";
+import { dataManager } from "@/lib/data-manager";
 import nextDynamic from "next/dynamic";
 
 const AdminTable = nextDynamic(() => import("@/components/admin/AdminTable"), { ssr: false });
@@ -8,47 +6,20 @@ const AdminTable = nextDynamic(() => import("@/components/admin/AdminTable"), { 
 // Allow dynamic rendering so we read fresh data on each request
 export const dynamic = "force-dynamic";
 
-async function getSignups() {
-  const dataDir = path.join(process.cwd(), "data");
-  const xlsxPath = path.join(dataDir, "signups.xlsx");
-  try {
-    await fs.access(xlsxPath);
-  } catch {
-    return [];
-  }
-
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(xlsxPath);
-  const worksheet = workbook.getWorksheet("Signups") ?? workbook.worksheets[0];
-  if (!worksheet) return [];
-
-  const headers = (worksheet.getRow(1).values as string[]).slice(1);
-  const rows = worksheet.getRows(2, worksheet.rowCount - 1) ?? [];
-
-  return rows.map((row) => {
-    const values = row.values as (string | number | undefined)[];
-    const obj: Record<string, string> = {};
-    headers.forEach((header, idx) => {
-      obj[header] = String(values[idx + 1] ?? "");
-    });
-    
-    // Add status field if not present (for existing free players)
-    if (!obj.status && obj.planType === "free") {
-      obj.status = "waitlisted";
-    }
-    
-    return obj;
-  });
-}
-
 export default async function AdminPage() {
-  const allSignups = await getSignups();
+  const allSignups = await dataManager.getSignups();
   
   // Filter for waitlisted players (previously free players)
   const waitlistedSignups = allSignups.filter((player) => {
     const planType = player.planType || "free";
     const status = player.status || "waitlisted";
-    return planType === "free" && (status === "waitlisted" || status === "pending");
+    const paymentStatus = player.paymentStatus || "n/a";
+    
+    // Only show free players that are waitlisted/pending and not paid
+    return planType === "free" && 
+           (status === "waitlisted" || status === "pending") &&
+           paymentStatus !== "paid" && 
+           paymentStatus !== "subscription";
   });
 
   return (

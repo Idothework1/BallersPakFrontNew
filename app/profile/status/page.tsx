@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PlayerLayout from "@/components/player/PlayerLayout";
-import PlayerStatusSettings from "@/components/player/PlayerStatusSettings";
+import PlayerStatus from "@/components/player/PlayerStatus";
 import { Button } from "@/components/ui/button";
 import { Key } from "lucide-react";
 import { TextAnimate } from "@/components/magicui/text-animate";
@@ -198,14 +198,10 @@ export default function ProfileStatusPage() {
 
   return (
     <PlayerLayout>
-      <PlayerStatusSettings
+      <PlayerStatus
         playerName={getPlayerName()}
-        playerEmail={user.email}
         playerTier={getPlayerTier() as "Pro" | "Elite" | "Free"}
-        status="Active"
-        joinDate={getJoinDate()}
-        region={user.location || "Punjab Region"}
-        onLogout={handleLogout}
+        joinDate={user.timestamp}
       />
     </PlayerLayout>
   );

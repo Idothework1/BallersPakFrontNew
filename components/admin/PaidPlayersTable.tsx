@@ -9,9 +9,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, Crown, CreditCard, Trash2, Mail, Calendar, Download } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { SignupData } from "@/lib/csv-data-manager";
 
 interface PaidPlayersTableProps {
-  data: Record<string, string>[];
+  data: SignupData[];
 }
 
 export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
@@ -123,8 +124,8 @@ export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
     if (!sortKey) return filtered;
     const arr = [...filtered];
     arr.sort((a, b) => {
-      const va = a[sortKey] ?? "";
-      const vb = b[sortKey] ?? "";
+      const va = (a as any)[sortKey] ?? "";
+      const vb = (b as any)[sortKey] ?? "";
       return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
     });
     return arr;
@@ -200,7 +201,7 @@ export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
                 const headers = Object.keys(data[0] || {});
                 const csvHeaders = headers.map(h => h.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase())).join(",") + "\n";
                 const csvRows = Array.from(selected)
-                  .map((idx) => headers.map((h) => `"${sorted[idx][h] || ""}"`).join(","))
+                  .map((idx) => headers.map((h) => `"${(sorted[idx] as any)[h] || ""}"`).join(","))
                   .join("\n");
                 const csvContent = csvHeaders + csvRows;
                 const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -234,17 +235,17 @@ export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
                   "Revenue Value",
                 ];
 
-                const mapRowToTemplate = (row: Record<string, string>): string[] => [
+                const mapRowToTemplate = (row: SignupData): string[] => [
                   "BallersPak Paid",
-                  row["planType"] === "elite" ? "Elite Plan ($111)" : "Pro Academy ($299)",
-                  row["fullName"] || "N/A",
-                  calculateAge(row["birthday"]) || "N/A",
-                  row["email"] || "N/A",
-                  row["position"] || "N/A",
-                  row["currentLevel"] || row["experienceLevel"] || "N/A",
-                  row["paymentStatus"] || "Completed",
-                  formatTimestamp(row["timestamp"]) || "N/A",
-                  row["planType"] === "elite" ? "$111" : "$299",
+                  row.planType === "elite" ? "Elite Plan ($111)" : "Pro Academy ($299)",
+                  row.fullName || "N/A",
+                  calculateAge(row.birthday || "") || "N/A",
+                  row.email || "N/A",
+                  row.position || "N/A",
+                  row.experienceLevel || "N/A",
+                  row.paymentStatus || "Completed",
+                  formatTimestamp(row.timestamp) || "N/A",
+                  row.planType === "elite" ? "$111" : "$299",
                 ];
 
                 const csvHeaders = paidPlayersHeaders.join(",") + "\n";
@@ -346,9 +347,9 @@ export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
                     <TableCell className="text-gray-300">{formatTimestamp(row.timestamp)}</TableCell>
                     <TableCell>{getPlanBadge(row.planType)}</TableCell>
                     <TableCell className="text-white font-medium">{row.fullName || "N/A"}</TableCell>
-                    <TableCell className="text-gray-300">{calculateAge(row.birthday)}</TableCell>
+                    <TableCell className="text-gray-300">{calculateAge(row.birthday || "")}</TableCell>
                     <TableCell className="text-gray-300">{row.position || "N/A"}</TableCell>
-                    <TableCell className="text-gray-300">{row.currentLevel || row.experienceLevel || "N/A"}</TableCell>
+                    <TableCell className="text-gray-300">{row.experienceLevel || "N/A"}</TableCell>
                     <TableCell className="text-gray-300">
                       <div className="flex items-center gap-1">
                         <Mail className="h-3 w-3" />
@@ -420,7 +421,7 @@ export default function PaidPlayersTable({ data }: PaidPlayersTableProps) {
                               <div className="flex items-center gap-2">
                                 <Crown className="h-4 w-4 text-gray-400" />
                                 <span className="text-sm text-gray-300">Experience Level:</span>
-                                <span className="text-sm text-white">{row.currentLevel || row.experienceLevel || "N/A"}</span>
+                                <span className="text-sm text-white">{row.experienceLevel || "N/A"}</span>
                               </div>
                             </div>
                           </div>

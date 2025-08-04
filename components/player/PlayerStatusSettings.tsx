@@ -30,10 +30,7 @@ export default function PlayerStatusSettings({
         <div className="flex flex-col min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-600 scrollbar-track-neutral-800">
           <PlayerStatus
             playerTier={playerTier}
-            status={status}
             joinDate={joinDate}
-            region={region}
-            compact={true}
           />
         </div>
 

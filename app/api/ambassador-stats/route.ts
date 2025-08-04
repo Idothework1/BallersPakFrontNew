@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import ExcelJS from "exceljs";
+import { dataManager } from "@/lib/data-manager";
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -17,113 +15,64 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const dataDir = path.join(process.cwd(), "data");
-    const xlsxPath = path.join(dataDir, "signups.xlsx");
-    
-    // Load workbook
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(xlsxPath);
-    const worksheet = workbook.getWorksheet("Signups");
+    console.log(`📊 Calculating stats for ambassador ${ambassadorId}`);
 
-    if (!worksheet) {
-      return NextResponse.json(
-        { error: "Worksheet not found" },
-        { status: 404 }
-      );
-    }
-
-    // Get headers (slice(1) to remove empty first cell in Excel)
-    const headers = (worksheet.getRow(1).values as string[]).slice(1);
-    
-    // Use the new referredBy field for accurate referral tracking
-    let referralFieldIndex = headers.findIndex(h => h === "referredBy");
-    
-    // Fallback to legacy ambassadorId if referredBy doesn't exist yet
-    if (referralFieldIndex === -1) {
-      console.log("⚠️ referredBy field not found, falling back to legacy ambassadorId");
-      referralFieldIndex = headers.findIndex(h => h === "ambassadorId");
-    }
-    
-    const statusIndex = headers.findIndex(h => h === "status");
-    const timestampIndex = headers.findIndex(h => h === "timestamp");
-    const emailIndex = headers.findIndex(h => h === "email");
-    const firstNameIndex = headers.findIndex(h => h === "firstName");
-    const lastNameIndex = headers.findIndex(h => h === "lastName");
-
-    if (referralFieldIndex === -1) {
-      return NextResponse.json(
-        { error: "Ambassador referral tracking not configured" },
-        { status: 500 }
-      );
-    }
-
-    console.log(`📊 Calculating stats for ambassador ${ambassadorId} using field index ${referralFieldIndex}`);
-    console.log(`📊 Status field index: ${statusIndex}`);
-    console.log(`📊 Total worksheet rows: ${worksheet.rowCount}`);
+    // Get all signups
+    const allSignups = await dataManager.getSignups();
+    console.log(`📊 Total signups found: ${allSignups.length}`);
 
     // Collect signups for this ambassador based on referrals (not assignments)
-    const signups: any[] = [];
+    const ambassadorSignups = allSignups.filter(signup => {
+      // Use referredBy field for accurate referral tracking, fallback to ambassadorId
+      const referralId = signup.referredBy || signup.ambassadorId || "";
+      return referralId === ambassadorId;
+    });
+
+    console.log(`📊 Found ${ambassadorSignups.length} signups for ambassador ${ambassadorId}`);
+
+    // Calculate stats
     let totalSignups = 0;
     let approvedSignups = 0;
     let rejectedSignups = 0;
     let waitlistedSignups = 0;
-    let rowsProcessed = 0;
-    let matchingRows: number[] = [];
+    let paidSignups = 0;
 
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) return; // Skip header row
+    const signups = ambassadorSignups.map(signup => {
+      totalSignups++;
       
-      rowsProcessed++;
-      const rowValues = row.values as (string | number | undefined)[];
-      // Add 1 to indices to account for Excel's 1-based indexing
-      const rowReferralId = String(rowValues[referralFieldIndex + 1] ?? "").trim();
+      const status = (signup.status || "waitlisted").toLowerCase().trim();
+      const paymentStatus = (signup.paymentStatus || "n/a").toLowerCase();
       
-      // Log every row for debugging
-      console.log(`📊 Row ${rowNumber}: referralId="${rowReferralId}", target="${ambassadorId}", match=${rowReferralId === ambassadorId}`);
-      
-      // Only count signups that were referred by this ambassador
-      if (rowReferralId === ambassadorId) {
-        matchingRows.push(rowNumber);
-        totalSignups++;
-        
-        const status = String(rowValues[statusIndex + 1] ?? "").toLowerCase().trim();
-        const email = String(rowValues[emailIndex + 1] ?? "");
-        console.log(`📊 ✅ MATCH Row ${rowNumber}: email=${email}, status="${status}", rawStatus="${rowValues[statusIndex + 1]}"`);
-        
-        switch(status) {
-          case "approved":
-            approvedSignups++;
-            break;
-          case "rejected":
-            rejectedSignups++;
-            break;
-          case "waitlisted":
-          case "pending":
-          case "":
-          default:
-            waitlistedSignups++;
-            break;
-        }
-
-        // Add to detailed signups array - clean the data for display
-        signups.push({
-          timestamp: String(rowValues[timestampIndex + 1] ?? ""),
-          firstName: String(rowValues[firstNameIndex + 1] ?? ""),
-          lastName: String(rowValues[lastNameIndex + 1] ?? ""),
-          status: status || "waitlisted",
-          // Only include username, not email for privacy
-          username: `${String(rowValues[firstNameIndex + 1] ?? "")} ${String(rowValues[lastNameIndex + 1] ?? "")}`.trim() || "Unknown"
-        });
+      switch(status) {
+        case "approved":
+          approvedSignups++;
+          break;
+        case "rejected":
+          rejectedSignups++;
+          break;
+        case "waitlisted":
+        case "pending":
+        case "":
+        default:
+          waitlistedSignups++;
+          break;
       }
-    });
 
-    console.log(`📊 Processing summary:`, {
-      totalRows: worksheet.rowCount,
-      rowsProcessed,
-      matchingRows,
-      ambassadorId,
-      referralFieldIndex,
-      statusIndex
+      // Count paid users
+      if (paymentStatus === "paid" || paymentStatus === "subscription") {
+        paidSignups++;
+      }
+
+      // Return cleaned signup data for display
+      return {
+        timestamp: signup.timestamp || "",
+        firstName: signup.firstName || "",
+        lastName: signup.lastName || "",
+        status: status || "waitlisted",
+        // Only include username, not email for privacy
+        username: `${signup.firstName || ""} ${signup.lastName || ""}`.trim() || "Unknown",
+        isPaid: paymentStatus === "paid" || paymentStatus === "subscription"
+      };
     });
 
     // Sort signups by timestamp (newest first)
@@ -134,7 +83,7 @@ export async function GET(request: NextRequest) {
       approvedSignups,
       rejectedSignups,
       waitlistedSignups,
-      usingField: referralFieldIndex === headers.findIndex(h => h === "referredBy") ? "referredBy" : "ambassadorId (legacy)"
+      paidSignups
     });
 
     return NextResponse.json({
@@ -144,17 +93,18 @@ export async function GET(request: NextRequest) {
         approvedSignups,
         rejectedSignups,
         waitlistedSignups,
+        paidSignups,
+        conversionRate: totalSignups > 0 ? Math.round((paidSignups / totalSignups) * 100) : 0
       },
       signups: signups.map(signup => ({
         timestamp: signup.timestamp,
         username: signup.username, // Only username, no email/personal info
-        status: signup.status
+        status: signup.status,
+        isPaid: signup.isPaid
       })),
       meta: {
-        trackingField: referralFieldIndex === headers.findIndex(h => h === "referredBy") ? "referredBy" : "ambassadorId",
-        note: referralFieldIndex === headers.findIndex(h => h === "referredBy") 
-          ? "Using new referral tracking system"
-          : "Using legacy tracking - consider updating data schema"
+        trackingField: "referredBy",
+        note: "Using CSV-based tracking system"
       }
     });
 
@@ -165,4 +115,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

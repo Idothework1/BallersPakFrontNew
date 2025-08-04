@@ -92,8 +92,9 @@ export default function ProfilePage() {
   };
 
   const getPlayerTier = () => {
-    if (!user) return "Pro";
-    switch (user.planType) {
+    if (!user) return "Free";
+    const plan = user.planType?.toLowerCase();
+    switch (plan) {
       case "elite":
         return "Elite";
       case "pro":

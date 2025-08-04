@@ -32,8 +32,17 @@ export default function PricingSection() {
     setIsLoading(true);
     setActiveId("elite");
     
-    // Navigate to paid plan registration with plan details
-    router.push(`/paid-plan/elite`);
+    // Navigate to paid plan registration with annual billing
+    router.push(`/paid-plan/elite?billing=annual`);
+  };
+
+  const handleEliteMonthly = async () => {
+    setShowEliteConfirmation(false);
+    setIsLoading(true);
+    setActiveId("elite");
+    
+    // Navigate to paid plan registration with monthly billing
+    router.push(`/paid-plan/elite?billing=monthly`);
   };
 
   return (
@@ -207,11 +216,12 @@ export default function PricingSection() {
 
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => setShowEliteConfirmation(false)}
+                    onClick={handleEliteMonthly}
+                    disabled={isLoading}
                     variant="outline"
                     className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
                   >
-                    Maybe Later
+                    {isLoading && activeId === "elite" ? "Processing..." : "💳 Pay $15/Month Instead"}
                   </Button>
                   <Button
                     onClick={handleEliteConfirm}
