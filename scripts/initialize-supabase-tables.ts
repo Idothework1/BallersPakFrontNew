@@ -7,8 +7,8 @@ async function initializeTables() {
     await supabaseManager.initializeTables();
     console.log('✅ Tables initialized successfully!');
     
-    // Test the connection by fetching admin stats
-    const stats = await supabaseManager.getAdminStats();
+    // Test the connection by fetching stats
+    const stats = await supabaseManager.getStats();
     console.log('📊 Current database stats:', stats);
     
     // Check if default admin exists
@@ -18,9 +18,17 @@ async function initializeTables() {
     if (!hasAdmin) {
       console.log('⚠️  No admin user found. Creating default admin...');
       await supabaseManager.addAdminUser({
+        id: `admin_${Date.now()}`,
         username: 'admin',
         password: 'admin123',
-        role: 'admin'
+        role: 'admin',
+        created: new Date().toISOString(),
+        stats: {
+          signups: 0,
+          conversions: 0,
+          assignments: 0,
+          completed: 0
+        }
       });
       console.log('✅ Default admin created (username: admin, password: admin123)');
       console.log('⚠️  IMPORTANT: Change this password immediately!');
