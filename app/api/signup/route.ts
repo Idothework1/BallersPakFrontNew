@@ -86,9 +86,9 @@ export async function POST(request: NextRequest) {
       legacyAmbassadorId: referredBy || "none"
     });
 
-    // Save to CSV
+    // Save to data manager (CSV or Supabase based on environment)
     await dataManager.addSignup(newSignup);
-    console.log("✅ Signup data saved to CSV successfully");
+    console.log(`✅ Signup data saved successfully using ${process.env.USE_SUPABASE === 'true' || process.env.NODE_ENV === 'production' || process.env.VERCEL === '1' ? 'Supabase' : 'CSV'}`);
 
     // Check if ambassador was provided and exists
     if (data.ambassadorId) {

@@ -22,6 +22,21 @@ async function executeQuery(text: string, params?: any[]) {
 }
 
 export class SupabaseDataManager {
+  private initialized = false;
+  
+  // Ensure tables are initialized before any operation
+  private async ensureInitialized() {
+    if (!this.initialized) {
+      try {
+        await this.initializeTables();
+        this.initialized = true;
+        console.log('✅ Supabase tables initialized');
+      } catch (error) {
+        console.error('❌ Failed to initialize Supabase tables:', error);
+        throw error;
+      }
+    }
+  }
   // Initialize database tables
   async initializeTables(): Promise<void> {
     // Create signups table
@@ -107,11 +122,13 @@ export class SupabaseDataManager {
 
   // Signup Data Management
   async getSignups(): Promise<SignupData[]> {
+    await this.ensureInitialized();
     const result = await executeQuery('SELECT * FROM signups ORDER BY created_at DESC')
     return result.rows.map(this.mapSignupFromDB)
   }
 
   async addSignup(signup: Partial<SignupData>): Promise<SignupData> {
+    await this.ensureInitialized();
     const {
       timestamp, planType, paymentStatus, firstName, lastName, fullName,
       age, playedBefore, experienceLevel, playedClub, clubName, gender,
@@ -170,6 +187,7 @@ export class SupabaseDataManager {
   }
 
   async findSignupByEmail(email: string): Promise<SignupData | null> {
+    await this.ensureInitialized();
     const result = await executeQuery('SELECT * FROM signups WHERE email = $1', [email])
     return result.rows.length > 0 ? this.mapSignupFromDB(result.rows[0]) : null
   }
@@ -181,11 +199,13 @@ export class SupabaseDataManager {
 
   // Admin User Management
   async getAdminUsers(): Promise<AdminUser[]> {
+    await this.ensureInitialized();
     const result = await executeQuery('SELECT * FROM admin_users ORDER BY created_at')
     return result.rows.map(this.mapAdminUserFromDB)
   }
 
   async addAdminUser(user: AdminUser): Promise<void> {
+    await this.ensureInitialized();
     await executeQuery(`
       INSERT INTO admin_users (id, username, password, role, stats)
       VALUES ($1, $2, $3, $4, $5)
@@ -228,6 +248,7 @@ export class SupabaseDataManager {
   }
 
   async findAdminUser(username: string): Promise<AdminUser | null> {
+    await this.ensureInitialized();
     const result = await executeQuery('SELECT * FROM admin_users WHERE username = $1', [username])
     return result.rows.length > 0 ? this.mapAdminUserFromDB(result.rows[0]) : null
   }

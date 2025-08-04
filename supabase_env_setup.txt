@@ -1,0 +1,5 @@
+# Add these to your .env.local file:
+USE_SUPABASE=true
+NEXT_PUBLIC_SUPABASE_URL=https://younysmtbtlwgaapayaz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvdW55c210YnRsd2dhYXBheWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMzQyODYsImV4cCI6MjA2OTkxMDI4Nn0.ULkA2J9beXRj2NuNKBqngYZRCmVm54bTBAIVclxgkFU
+DATABASE_URL_POOLED=postgresql://postgres.younysmtbtlwgaapayaz:jEcArMSJgoojCuDZ@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
