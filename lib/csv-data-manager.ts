@@ -162,6 +162,16 @@ export class CSVDataManager {
     return signups.find(s => s.paymentId === paymentId) || null;
   }
 
+  async deleteSignup(email: string): Promise<boolean> {
+    const signups = await this.getSignups();
+    const filtered = signups.filter(s => s.email !== email);
+    if (filtered.length === signups.length) {
+      return false;
+    }
+    await this.saveSignups(filtered);
+    return true;
+  }
+
   // Admin User Management
   async getAdminUsers(): Promise<AdminUser[]> {
     try {

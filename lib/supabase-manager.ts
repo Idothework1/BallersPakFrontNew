@@ -246,6 +246,12 @@ export class SupabaseDataManager {
     return result.rows.length > 0 ? this.mapSignupFromDB(result.rows[0]) : null
   }
 
+  async deleteSignup(email: string): Promise<boolean> {
+    await this.ensureInitialized();
+    const result = await executeQuery('DELETE FROM signups WHERE email = $1', [email]);
+    return (result.rowCount ?? 0) > 0;
+  }
+
   // Admin User Management
   async getAdminUsers(): Promise<AdminUser[]> {
     await this.ensureInitialized();
