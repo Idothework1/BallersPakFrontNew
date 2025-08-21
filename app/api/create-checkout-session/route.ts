@@ -48,12 +48,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Resolve base URL (prefer deployed domain)
+    const vercelBase = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+    const requestOrigin = (() => {
+      try { return request.nextUrl.origin; } catch { return null; }
+    })();
+    const configuredBase = process.env.NEXT_PUBLIC_APP_URL || null;
+    const baseUrl = vercelBase || requestOrigin || configuredBase || 'http://localhost:3000';
+
+    // Build cancel URL with correct query joining
+    const cancelUrl = (() => {
+      const url = new URL(`${baseUrl}/paid-plan/${plan}`);
+      if (billing === 'monthly') url.searchParams.set('billing', 'monthly');
+      url.searchParams.set('payment', 'cancelled');
+      return url.toString();
+    })();
+
     // Create Stripe checkout session
     const sessionConfig: any = {
       payment_method_types: ["card"],
       customer_email: formData.email,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/paid-plan/${plan}${billing === "monthly" ? "?billing=monthly" : ""}?payment=cancelled`,
+      success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl,
       metadata: {
         plan: plan,
         billing: billing,
@@ -76,7 +92,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: selectedPlan.name,
               description: selectedPlan.description,
-              images: [`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/Logo.png`],
+              images: [`${baseUrl}/Logo.png`],
             },
             unit_amount: selectedPlan.amount,
             recurring: {
@@ -96,7 +112,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: selectedPlan.name,
               description: selectedPlan.description,
-              images: [`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/Logo.png`],
+              images: [`${baseUrl}/Logo.png`],
             },
             unit_amount: selectedPlan.amount,
           },
