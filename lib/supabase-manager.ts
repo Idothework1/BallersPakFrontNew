@@ -167,16 +167,65 @@ export class SupabaseDataManager {
   }
 
   async updateSignup(email: string, updates: Partial<SignupData>): Promise<boolean> {
-    const setClause = Object.keys(updates)
-      .filter(key => key !== 'email' && updates[key as keyof SignupData] !== undefined)
-      .map((key, index) => `${key} = $${index + 2}`)
-      .join(', ')
+    await this.ensureInitialized();
 
-    if (!setClause) return false
+    const camelToSnake: Record<string, string> = {
+      timestamp: 'timestamp',
+      planType: 'plan_type',
+      paymentStatus: 'payment_status',
+      firstName: 'first_name',
+      lastName: 'last_name',
+      fullName: 'full_name',
+      age: 'age',
+      playedBefore: 'played_before',
+      experienceLevel: 'experience_level',
+      playedClub: 'played_club',
+      clubName: 'club_name',
+      gender: 'gender',
+      hasDisability: 'has_disability',
+      location: 'location',
+      email: 'email',
+      phone: 'phone',
+      position: 'position',
+      goal: 'goal',
+      whyJoin: 'why_join',
+      whyJoinReason: 'why_join_reason',
+      birthday: 'birthday',
+      status: 'status',
+      referredBy: 'referred_by',
+      assignedTo: 'assigned_to',
+      ambassadorId: 'ambassador_id',
+      processedBy: 'processed_by',
+      paymentId: 'payment_id',
+      amount: 'amount',
+      currency: 'currency',
+      billing: 'billing',
+    }
 
-    const values = Object.keys(updates)
-      .filter(key => key !== 'email' && updates[key as keyof SignupData] !== undefined)
-      .map(key => updates[key as keyof SignupData])
+    const entries = Object.entries(updates)
+      .filter(([key, value]) => key !== 'email' && value !== undefined)
+
+    if (entries.length === 0) return false
+
+    const setFragments: string[] = []
+    const values: any[] = []
+
+    entries.forEach(([camelKey, value], index) => {
+      const column = camelToSnake[camelKey] ?? camelKey
+
+      let processedValue: any = value
+      if (column === 'amount') {
+        if (typeof value === 'string') {
+          const trimmed = value.trim()
+          processedValue = trimmed !== '' ? parseFloat(trimmed) : null
+        }
+      }
+
+      setFragments.push(`${column} = $${index + 2}`)
+      values.push(processedValue)
+    })
+
+    const setClause = setFragments.join(', ')
 
     const result = await executeQuery(
       `UPDATE signups SET ${setClause} WHERE email = $1`,

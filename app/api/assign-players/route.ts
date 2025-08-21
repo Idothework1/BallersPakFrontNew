@@ -9,13 +9,14 @@ async function updatePlayerAssignments(playerEmails: string[], assigneeId: strin
     const player = signups.find(s => s.email === email);
     if (!player) continue;
     
-    const updates: any = {
-      assignedTo: assigneeId
-    };
-    
-    // If assigning to a controller, also update processedBy
+    // Build updates without removing the other assignment type
+    const updates: any = {};
     if (assigneeType === 'controller') {
+      // Only set controller assignment; do not touch ambassador assignment
       updates.processedBy = assigneeId;
+    } else if (assigneeType === 'ambassador') {
+      // Only set ambassador assignment; do not touch controller assignment
+      updates.assignedTo = assigneeId;
     }
     
     const updated = await dataManager.updateSignup(email, updates);
@@ -44,7 +45,18 @@ async function updatePlayerAssignments(playerEmails: string[], assigneeId: strin
 
 export async function POST(request: NextRequest) {
   try {
-    const { playerEmails, assigneeId, assigneeType } = await request.json();
+    const {
+      playerEmails,
+      assigneeId,
+      assigneeType,
+      controllerId,
+      ambassadorId
+    } = await request.json();
+    
+    // Normalize incoming payload to final assignee id/type
+    let finalAssigneeId: string | undefined = assigneeId || controllerId || ambassadorId;
+    let finalAssigneeType: 'controller' | 'ambassador' | undefined =
+      controllerId ? 'controller' : ambassadorId ? 'ambassador' : undefined;
     
     // Validate inputs
     if (!playerEmails || !Array.isArray(playerEmails) || playerEmails.length === 0) {
@@ -53,25 +65,35 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    if (!assigneeId || !assigneeType) {
-      return NextResponse.json({ 
-        error: "Assignee ID and type are required" 
+    // If type still not provided, try to infer from provided assigneeId by looking up the admin user
+    if (!finalAssigneeType && finalAssigneeId) {
+      const adminUsers = await dataManager.getAdminUsers();
+      const found = adminUsers.find(u => u.id === finalAssigneeId);
+      if (found && (found.role === 'controller' || found.role === 'ambassador')) {
+        finalAssigneeType = found.role;
+      }
+    }
+    
+    if (!finalAssigneeId || !finalAssigneeType) {
+      return NextResponse.json({
+        error: "Provide controllerId or ambassadorId (or assigneeId with valid type)"
       }, { status: 400 });
     }
     
-    if (!['controller', 'ambassador'].includes(assigneeType)) {
-      return NextResponse.json({ 
-        error: "Assignee type must be 'controller' or 'ambassador'" 
+    // finalAssigneeType has been normalized or inferred above; validate against it
+    if (!['controller', 'ambassador'].includes(finalAssigneeType)) {
+      return NextResponse.json({
+        error: "Assignee type must be 'controller' or 'ambassador'"
       }, { status: 400 });
     }
     
-    console.log(`📋 Assigning ${playerEmails.length} players to ${assigneeType} ${assigneeId}`);
+    console.log(`📋 Assigning ${playerEmails.length} players to ${finalAssigneeType} ${finalAssigneeId}`);
     
-    const updatedCount = await updatePlayerAssignments(playerEmails, assigneeId, assigneeType);
+    const updatedCount = await updatePlayerAssignments(playerEmails, finalAssigneeId, finalAssigneeType);
     
     return NextResponse.json({
       success: true,
-      message: `Successfully assigned ${updatedCount} players to ${assigneeType}`,
+      message: `Successfully assigned ${updatedCount} players to ${finalAssigneeType}`,
       assigned: updatedCount,
       total: playerEmails.length
     });

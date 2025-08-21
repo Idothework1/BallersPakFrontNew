@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { csvManager } from "@/lib/csv-data-manager";
+import { dataManager } from "@/lib/data-manager";
 
 // Force dynamic because we rely on filesystem writes
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     console.log(`📧 Processing action: ${action} for email: ${email}`);
 
     // Find the player
-    const player = await csvManager.findSignupByEmail(email);
+    const player = await dataManager.findSignupByEmail(email);
     
     if (!player) {
       return NextResponse.json(
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the player
-    const updated = await csvManager.updateSignup(email, updates);
+    const updated = await dataManager.updateSignup(email, updates);
     
     if (!updated) {
       return NextResponse.json(

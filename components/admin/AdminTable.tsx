@@ -120,74 +120,118 @@ export default function AdminTable({ data }: AdminTableProps) {
 
   // Get assignment badge with resolved names
   const getAssignmentBadge = (row: SignupData) => {
-    const assignedTo = row.assignedTo; // Current assignment (controller/ambassador)
-    const referredBy = row.referredBy || row.ambassadorId; // Original referral (fallback to legacy field)
+    const controllerId = row.processedBy; // Controller assignment (new)
+    const ambassadorAssigneeId = row.assignedTo; // Ambassador assignment (new)
+    const referredBy = row.referredBy || row.ambassadorId; // Original referral (legacy)
     
-    const badges = [];
+    const badges: React.ReactNode[] = [];
+    const pushedKeys = new Set<string>();
     
-    // Check for controller assignment
-    if (assignedTo) {
-      const assignedUser = adminUsers.find(user => user.id === assignedTo);
-      
-      if (assignedUser?.role === 'controller') {
+    // Controller assignment via processedBy
+    if (controllerId) {
+      const controllerUser = adminUsers.find(user => user.id === controllerId);
+      if (controllerUser?.role === 'controller') {
         badges.push(
-          <Badge key="controller" className="bg-blue-500 text-white text-xs mr-1">
+          <Badge key={`controller-${controllerUser.id}`} className="bg-blue-500 text-white text-xs mr-1">
             <UserCheck className="h-3 w-3 mr-1" />
-            Controller: {assignedUser.username}
+            Controller: {controllerUser.username}
           </Badge>
         );
-      } else if (assignedUser?.role === 'ambassador') {
+        pushedKeys.add(`controller-${controllerUser.id}`);
+      } else if (!controllerUser) {
         badges.push(
-          <Badge key="assigned-ambassador" className="bg-purple-500 text-white text-xs mr-1">
-            <Shield className="h-3 w-3 mr-1" />
-            Assigned to: {assignedUser.username}
-          </Badge>
-        );
-      } else if (assignedTo && !assignedUser) {
-        // Handle legacy assignments or unknown IDs
-        badges.push(
-          <Badge key="unknown-assignment" className="bg-gray-500 text-white text-xs mr-1">
+          <Badge key={`controller-unknown-${controllerId}`} className="bg-gray-500 text-white text-xs mr-1">
             <UserCheck className="h-3 w-3 mr-1" />
-            Assigned: {assignedTo}
+            Controller: {controllerId}
           </Badge>
         );
+        pushedKeys.add(`controller-unknown-${controllerId}`);
       }
     }
     
-    // Show original ambassador referral (separate from assignments)
-    if (referredBy) {
-      const referringAmbassador = adminUsers.find(user => user.id === referredBy && user.role === 'ambassador');
-      
-      if (referringAmbassador) {
-        badges.push(
-          <Badge key="referral" className="bg-green-500 text-white text-xs">
-            <Shield className="h-3 w-3 mr-1" />
-            Referred by: {referringAmbassador.username}
-          </Badge>
-        );
-      } else if (referredBy) {
-        // Check if it's actually a controller ID (for legacy data)
-        const referringController = adminUsers.find(user => user.id === referredBy && user.role === 'controller');
-        
-        if (referringController) {
+    // Ambassador assignment via assignedTo
+    if (ambassadorAssigneeId) {
+      const assignedUser = adminUsers.find(user => user.id === ambassadorAssigneeId);
+      if (assignedUser?.role === 'ambassador') {
+        const key = `assigned-ambassador-${assignedUser.id}`;
+        if (!pushedKeys.has(key)) {
           badges.push(
-            <Badge key="legacy-referral" className="bg-yellow-500 text-black text-xs">
-              <UserCheck className="h-3 w-3 mr-1" />
-              Legacy Ref: {referringController.username}
-            </Badge>
-          );
-        } else {
-          badges.push(
-            <Badge key="unknown-referral" className="bg-gray-500 text-white text-xs">
+            <Badge key={key} className="bg-purple-500 text-white text-xs mr-1">
               <Shield className="h-3 w-3 mr-1" />
-              Ref: {referredBy}
+              Assigned to: {assignedUser.username}
             </Badge>
           );
+          pushedKeys.add(key);
+        }
+      } else if (assignedUser?.role === 'controller' && !controllerId) {
+        // Legacy: assignedTo used to hold controller; show it if processedBy not set
+        const key = `controller-${assignedUser.id}`;
+        if (!pushedKeys.has(key)) {
+          badges.push(
+            <Badge key={key} className="bg-blue-500 text-white text-xs mr-1">
+              <UserCheck className="h-3 w-3 mr-1" />
+              Controller: {assignedUser.username}
+            </Badge>
+          );
+          pushedKeys.add(key);
+        }
+      } else if (!assignedUser) {
+        const key = `assigned-unknown-${ambassadorAssigneeId}`;
+        if (!pushedKeys.has(key)) {
+          badges.push(
+            <Badge key={key} className="bg-gray-500 text-white text-xs mr-1">
+              <Shield className="h-3 w-3 mr-1" />
+              Assigned: {ambassadorAssigneeId}
+            </Badge>
+          );
+          pushedKeys.add(key);
         }
       }
     }
     
-    // Show unassigned if no assignments or referrals
+    // Original referral (separate from assignments)
+    if (referredBy) {
+      const referringAmbassador = adminUsers.find(user => user.id === referredBy && user.role === 'ambassador');
+      if (referringAmbassador) {
+        const key = `referral-${referringAmbassador.id}`;
+        if (!pushedKeys.has(key)) {
+          badges.push(
+            <Badge key={key} className="bg-green-500 text-white text-xs">
+              <Shield className="h-3 w-3 mr-1" />
+              Referred by: {referringAmbassador.username}
+            </Badge>
+          );
+          pushedKeys.add(key);
+        }
+      } else {
+        // Legacy or unknown referral id
+        const referringController = adminUsers.find(user => user.id === referredBy && user.role === 'controller');
+        if (referringController) {
+          const key = `legacy-referral-${referringController.id}`;
+          if (!pushedKeys.has(key)) {
+            badges.push(
+              <Badge key={key} className="bg-yellow-500 text-black text-xs">
+                <UserCheck className="h-3 w-3 mr-1" />
+                Legacy Ref: {referringController.username}
+              </Badge>
+            );
+            pushedKeys.add(key);
+          }
+        } else {
+          const key = `ref-unknown-${referredBy}`;
+          if (!pushedKeys.has(key)) {
+            badges.push(
+              <Badge key={key} className="bg-gray-500 text-white text-xs">
+                <Shield className="h-3 w-3 mr-1" />
+                Ref: {referredBy}
+              </Badge>
+            );
+            pushedKeys.add(key);
+          }
+        }
+      }
+    }
+    
     if (badges.length === 0) {
       badges.push(
         <Badge key="unassigned" className="bg-gray-500 text-white text-xs">

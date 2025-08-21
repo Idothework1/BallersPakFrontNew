@@ -26,6 +26,13 @@ interface AmbassadorStats {
     timestamp: string;
     status: string;
   }>;
+  assignedUsers?: Array<{
+    email: string;
+    firstName: string;
+    lastName: string;
+    timestamp: string;
+    status: string;
+  }>;
 }
 
 export default function AmbassadorDashboard() {
@@ -88,7 +95,8 @@ export default function AmbassadorDashboard() {
             username: signup.username,
             timestamp: signup.timestamp,
             status: signup.status
-          }))
+          })),
+          assignedUsers: statsData.assignedUsers || []
         });
       } else {
         // Fallback to empty stats if API fails
@@ -98,7 +106,8 @@ export default function AmbassadorDashboard() {
           rejectedSignups: 0,
           waitlistedSignups: 0,
           conversionRate: 0,
-          recentSignups: []
+          recentSignups: [],
+          assignedUsers: []
         });
       }
     } catch (error) {
@@ -315,6 +324,47 @@ export default function AmbassadorDashboard() {
                     </div>
                   ))}
                 </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Assigned Users */}
+          <Card className="bg-neutral-950 border-neutral-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-purple-400" />
+                Your Assigned Players
+              </CardTitle>
+              <CardDescription>
+                Players currently assigned to you by admins
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!stats.assignedUsers || stats.assignedUsers.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500">
+                  No players currently assigned to you.
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-neutral-800">
+                      <TableHead className="text-neutral-300">Name</TableHead>
+                      <TableHead className="text-neutral-300">Email</TableHead>
+                      <TableHead className="text-neutral-300">Assigned</TableHead>
+                      <TableHead className="text-neutral-300">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.assignedUsers!.map((u, idx) => (
+                      <TableRow key={idx} className="border-neutral-800">
+                        <TableCell className="text-white font-medium">{u.firstName} {u.lastName}</TableCell>
+                        <TableCell className="text-neutral-400">{u.email}</TableCell>
+                        <TableCell className="text-neutral-400">{formatTimestamp(u.timestamp)}</TableCell>
+                        <TableCell>{getStatusBadge(u.status)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>

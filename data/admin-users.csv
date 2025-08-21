@@ -1,6 +1,7 @@
 username,password,role,id,created,stats
 admin,admin123,admin,admin-default,2025-08-04T19:52:23.347Z,{}
 controller1,controller123,controller,controller-1,2025-07-05T19:52:23.347Z,"{""assignments"":2,""completed"":1,""signups"":0,""conversions"":0}"
-controller2,controller456,controller,controller-2,2025-07-15T19:52:23.347Z,"{""assignments"":2,""completed"":1,""signups"":0,""conversions"":0}"
+controller2,controller456,controller,controller-2,2025-07-15T19:52:23.347Z,"{""assignments"":3,""completed"":2,""signups"":0,""conversions"":0}"
 ambassador1,ambassador123,ambassador,ambassador-1,2025-07-10T19:52:23.347Z,"{""signups"":4,""conversions"":0,""assignments"":0,""completed"":0}"
-ambassador2,ambassador456,ambassador,ambassador-2,2025-07-20T19:52:23.347Z,"{""signups"":2,""conversions"":1,""assignments"":0,""completed"":0}"
+ambassador2,ambassador456,ambassador,ambassador-2,2025-07-20T19:52:23.347Z,"{""signups"":2,""conversions"":1,""assignments"":1,""completed"":0}"
+123,123456,ambassador,ambassador-1755775997854,2025-08-21T11:33:17.854Z,"{""signups"":0,""conversions"":0,""assignments"":2,""completed"":0}"

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { csvManager } from "@/lib/csv-data-manager";
+import { dataManager } from "@/lib/data-manager";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-07-30.basil",
@@ -38,12 +38,12 @@ async function addPaidUser(session: Stripe.Checkout.Session) {
     });
     
     // Check if user already exists to prevent duplicates
-    const existingUser = await csvManager.findSignupByPaymentId(session.id);
+    const existingUser = await dataManager.findSignupByPaymentId(session.id);
     if (existingUser) {
       console.log(`✅ Webhook: User already exists for session ${session.id}, updating payment status...`);
       
       // Update payment status
-      await csvManager.updateSignup(existingUser.email, {
+      await dataManager.updateSignup(existingUser.email, {
         paymentStatus: session.mode === "subscription" ? "subscription" : "paid",
         status: "approved", // Auto-approve paid users
         paymentId: session.id,
@@ -56,12 +56,12 @@ async function addPaidUser(session: Stripe.Checkout.Session) {
     }
     
     // Check if user exists by email (might have signed up but not paid yet)
-    const existingUserByEmail = await csvManager.findSignupByEmail(email);
+    const existingUserByEmail = await dataManager.findSignupByEmail(email);
     if (existingUserByEmail) {
       console.log(`✅ Webhook: Found existing user by email ${email}, updating to paid status...`);
       
       // Update existing user to paid
-      await csvManager.updateSignup(email, {
+      await dataManager.updateSignup(email, {
         planType: session.metadata?.plan || "elite",
         paymentStatus: session.mode === "subscription" ? "subscription" : "paid",
         status: "approved", // Auto-approve paid users
@@ -118,7 +118,7 @@ async function addPaidUser(session: Stripe.Checkout.Session) {
     };
     
     // Add the new user
-    await csvManager.addSignup(newSignup);
+    await dataManager.addSignup(newSignup);
     
     console.log(`✅ Webhook: Added paid user: ${email} - Plan: ${session.metadata?.plan} - Amount: $${session.amount_total ? session.amount_total / 100 : 0}`);
     return true;

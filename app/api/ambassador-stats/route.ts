@@ -21,12 +21,14 @@ export async function GET(request: NextRequest) {
     const allSignups = await dataManager.getSignups();
     console.log(`📊 Total signups found: ${allSignups.length}`);
 
-    // Collect signups for this ambassador based on referrals (not assignments)
+    // Collect signups referred by this ambassador
     const ambassadorSignups = allSignups.filter(signup => {
-      // Use referredBy field for accurate referral tracking, fallback to ambassadorId
       const referralId = signup.referredBy || signup.ambassadorId || "";
       return referralId === ambassadorId;
     });
+
+    // Collect signups currently assigned to this ambassador
+    const assignedToAmbassador = allSignups.filter(signup => signup.assignedTo === ambassadorId);
 
     console.log(`📊 Found ${ambassadorSignups.length} signups for ambassador ${ambassadorId}`);
 
@@ -102,9 +104,16 @@ export async function GET(request: NextRequest) {
         status: signup.status,
         isPaid: signup.isPaid
       })),
+      assignedUsers: assignedToAmbassador.map(signup => ({
+        email: signup.email,
+        firstName: signup.firstName || "",
+        lastName: signup.lastName || "",
+        timestamp: signup.timestamp || "",
+        status: signup.status || "waitlisted",
+      })),
       meta: {
         trackingField: "referredBy",
-        note: "Using CSV-based tracking system"
+        note: "Using CSV/Supabase unified tracking"
       }
     });
 

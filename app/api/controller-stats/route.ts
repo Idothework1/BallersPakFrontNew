@@ -30,10 +30,10 @@ export async function GET(request: NextRequest) {
     const allSignups = await dataManager.getSignups();
     console.log(`📊 Total signups found: ${allSignups.length}`);
     
-    // Filter for users assigned to this controller
+    // Filter for users assigned to this controller (processedBy)
     const assignedUsers = allSignups
       .filter(signup => {
-        const isAssigned = signup.assignedTo === controllerId || signup.processedBy === controllerId;
+        const isAssigned = signup.processedBy === controllerId;
         if (isAssigned) {
           console.log(`📊 Found assigned user: ${signup.email} (status: ${signup.status})`);
         }
@@ -55,28 +55,7 @@ export async function GET(request: NextRequest) {
 
     console.log(`📊 Assigned users after filtering: ${assignedUsers.length}`);
 
-    // If no assigned users, show some waitlisted users for testing purposes
-    if (assignedUsers.length === 0) {
-      console.log(`📊 No assigned users found, showing waitlisted users for testing`);
-      const waitlistedUsers = allSignups
-        .filter(signup => signup.status === 'waitlisted' && signup.planType === 'free')
-        .slice(0, 10) // Show first 10 for testing
-        .map(signup => ({
-          id: signup.email,
-          firstName: signup.firstName || '',
-          lastName: signup.lastName || '',
-          email: signup.email || '',
-          phone: signup.phone || '',
-          location: signup.location || '',
-          experienceLevel: signup.experienceLevel || '',
-          goal: signup.goal || '',
-          timestamp: signup.timestamp || '',
-          status: 'assigned' as const // Show as assigned for testing
-        }));
-      
-      assignedUsers.push(...waitlistedUsers);
-      console.log(`📊 Added ${waitlistedUsers.length} waitlisted users for testing`);
-    }
+    // No testing fallback; only show truly assigned users
 
     // Calculate stats
     const totalAssigned = assignedUsers.length;

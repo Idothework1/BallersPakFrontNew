@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { csvManager } from "@/lib/csv-data-manager";
+import { dataManager } from "@/lib/data-manager";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-07-30.basil",
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     
     if (session.payment_status === "paid" || session.status === "complete") {
       // Check if the payment has already been processed
-      const existingPayment = await csvManager.findSignupByPaymentId(sessionId);
+      const existingPayment = await dataManager.findSignupByPaymentId(sessionId);
       
       if (existingPayment) {
         console.log(`✅ Payment already processed for session ${sessionId}`);
@@ -65,13 +65,13 @@ export async function GET(request: NextRequest) {
       }
       
       // Check if user exists by email
-      const existingUser = await csvManager.findSignupByEmail(email);
+      const existingUser = await dataManager.findSignupByEmail(email);
       
       if (existingUser) {
         // Update existing user to paid status
         console.log(`✅ Updating existing user ${email} to paid status`);
         
-        await csvManager.updateSignup(email, {
+        await dataManager.updateSignup(email, {
           planType: session.metadata?.plan || "elite",
           paymentStatus: isSubscription ? "subscription" : "paid",
           status: "approved", // Auto-approve paid users
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
         // Create new paid user (edge case - shouldn't normally happen)
         console.log(`⚠️ Creating new paid user for ${email} (no existing signup found)`);
         
-        await csvManager.addSignup({
+        await dataManager.addSignup({
           timestamp: new Date().toISOString(),
           firstName: firstName || "",
           lastName: lastName || "",
